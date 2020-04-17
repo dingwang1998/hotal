@@ -1,5 +1,7 @@
 <template>
   <header class="header">
+    <!-- el-row实现栅格化布局 -->
+    <!-- type=flex是组件快速的进行flex的布局 -->
     <el-row type="flex" justify="space-between" class="main">
       <!-- logo -->
       <div class="logo">
@@ -38,7 +40,12 @@
         </el-dropdown>
 
         <!-- 不存在用户信息展示登录注册链接 -->
-        <nuxt-link to="/user/login" class="account-link" v-else>登录 / 注册</nuxt-link>
+         <div class="login">
+           <a href="https://passport.mafengwo.cn/weibo" class="weibo"></a>
+           <a href="https://passport.mafengwo.cn/qq" class="QQ"></a>
+           <a href="https://passport.mafengwo.cn/wechat" class="weixin"></a>
+           <span  class="login-btn">登录/注册</span>
+         </div>
       </el-row>
     </el-row>
   </header>
@@ -91,13 +98,13 @@ export default {
       &:hover,
       &:focus,
       &:active {
-        border-bottom: 5px #409eff solid;
-        color: #409eff;
+        border-bottom: 5px #5573b7 solid;
+        color: #5573b7;
       }
     }
 
     /deep/ .nuxt-link-exact-active {
-      background: #409eff;
+      background: #5573b7;
       color: #fff !important;
     }
   }
@@ -134,15 +141,44 @@ export default {
     }
   }
 
-  .account-link {
-    font-size: 14px;
-    margin-left: 10px;
-    color: #666;
+  // .account-link {
+  //   font-size: 14px;
+  //   margin-left: 10px;
+  //   color: #666;
 
-    &:hover {
-      color: #409eff;
-      text-decoration: underline;
+  //   &:hover {
+  //     color: #409eff;
+  //     text-decoration: underline;
+  //   }
+  // }
+  .login{
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    width: 200px;
+    a{
+      display: inline-block;
+      height: 26px;
+      width: 26px;
     }
+    .weibo,.QQ,.weixin{
+      background: url(../static/split.png);
+      background-position: 0 -50px!important;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .weibo:hover{
+      background-position: 0 -80px!important;
+       background-color: #ff6700;
+       color: #fff;
+    }
+    font-size: 12px;
+  }
+  .login-btn{
+    display: inline-block;
+    width: 100px;
+    color: #ff9d00;
   }
 }
+
 </style>
