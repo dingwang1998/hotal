@@ -3,8 +3,8 @@
   <!-- rules验证规则 -->
   <!-- prop规则的对象名字 -->
   <el-form :model="form" ref="form" :rules="rules" class="form">
-    <el-form-item class="form-item" prop="username">
-      <el-input placeholder="用户名/手机" v-model="form.username" @keyup.enter.native="handleLoginSubmit"></el-input>
+    <el-form-item class="form-item" prop="username" >
+      <el-input placeholder="用户名/手机" v-model="form.username" @keyup.enter.native="handleLoginSubmit" id="inputId"></el-input>
     </el-form-item>
 
     <el-form-item class="form-item" prop="password">
@@ -43,6 +43,9 @@ export default {
         ]
       }
     }
+  },
+  mounted(){
+    document.getElementById('inputId').focus()
   },
   methods: {
     // 提交登录
