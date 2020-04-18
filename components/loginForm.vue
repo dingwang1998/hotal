@@ -4,11 +4,11 @@
   <!-- prop规则的对象名字 -->
   <el-form :model="form" ref="form" :rules="rules" class="form">
     <el-form-item class="form-item" prop="username">
-      <el-input placeholder="用户名/手机" v-model="form.username"></el-input>
+      <el-input placeholder="用户名/手机" v-model="form.username" @keyup.enter.native="handleLoginSubmit"></el-input>
     </el-form-item>
 
     <el-form-item class="form-item" prop="password">
-      <el-input placeholder="密码" type="password" v-model="form.password"></el-input>
+      <el-input placeholder="密码" type="password" v-model="form.password" @keyup.enter.native="handleLoginSubmit"></el-input>
     </el-form-item>
 
     <p class="form-text">
@@ -47,17 +47,28 @@ export default {
   methods: {
     // 提交登录
     handleLoginSubmit() {
-      this.$axios({
-          method:'POST',
-          url:'/accounts/login',
-          data:this.form,
-      }).then(res=>{
-          const{data}=res;
-          console.log(data);
-          
-        //   this.$store.commit(参数1，参数2)  通过这种方法调用mutations的方法，去修改vuex里面的state的值
-        // 参数1:vuex的文件名下的mutations里面的方法
-          this.$store.commit('user/saveData',data)
+      // this.$axios({
+      //     method:'POST',
+      //     url:'/accounts/login',
+      //     data:this.form,
+      // }).then(res=>{
+      //     const{data}=res;
+      //     console.log(data);
+      //   //   this.$store.commit(参数1，参数2)  通过这种方法调用mutations的方法，去修改vuex里面的state的值
+      //   // 参数1:vuex的文件名下的mutations里面的方法
+      //     this.$store.commit('user/saveData',data)
+      // })
+      // --------------------------
+      this.$refs.form.validate(async(valid)=>{
+        // valid如果值是true代表验证通过
+        if(valid){
+          // 调用actions方法用this.$store.dispatch固定写法,第一个参数是vuex存储的方法，第二个参数是要传过去的数据
+          // await的结果用一个变量来存储
+          const data=await this.$store.dispatch('user/login',this.form);
+          // 弹窗提示
+          this.$message.success('登录成功'+data.user.nickname);
+          this.$router.push('/');
+        }
       })
     }
   }
