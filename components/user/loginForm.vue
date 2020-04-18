@@ -50,18 +50,6 @@ export default {
   methods: {
     // 提交登录
     handleLoginSubmit() {
-      // this.$axios({
-      //     method:'POST',
-      //     url:'/accounts/login',
-      //     data:this.form,
-      // }).then(res=>{
-      //     const{data}=res;
-      //     console.log(data);
-      //   //   this.$store.commit(参数1，参数2)  通过这种方法调用mutations的方法，去修改vuex里面的state的值
-      //   // 参数1:vuex的文件名下的mutations里面的方法
-      //     this.$store.commit('user/saveData',data)
-      // })
-      // --------------------------
       this.$refs.form.validate(async(valid)=>{
         // valid如果值是true代表验证通过
         if(valid){

@@ -16,7 +16,7 @@ export const mutations={
 
 // 异步的login请求封装 export const actions固定写法
 export const actions={
-    // 封装login方法,第一个参数是state对象，第二个参数是传入的参数
+    // 封装login方法,第一个参数是store对象，第二个参数是传入的参数
     login(store,data){
         return this.$axios({
             method:'POST',
@@ -29,6 +29,38 @@ export const actions={
             store.commit('saveData',data)
             // 然后将这个结果return出去，让下一个then接受
             return data
+        })
+    },
+
+    // 模拟验证码
+    sendNum(store,username){
+        return this.$axios({
+            url:'/captchas',
+            method:'POST',
+            data:{
+                tel:username
+            }
+        }).then(res=>{
+            const{code}=res.data;
+            console.log(code);
+            
+            return code;
+        })
+    },
+
+    // 注册功能封装
+    register(store,data){
+        this.$axios({
+            url:'/accounts/register',
+            method:'POST',
+            data,
+        }).then(res=>{
+            const {data}=res;
+            console.log(data);
+            
+            // 通过commit来将返回的数据,修改到本地,实现注册完就登录的功能
+            store.commit('saveData',data)
+            return data;
         })
     }
 }
