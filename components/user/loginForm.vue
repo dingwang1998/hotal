@@ -35,7 +35,7 @@ export default {
         username: [
           //   required代表必填    rigger失去焦点触发
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 11, max: 11, message: '用户名格式不正确', trigger: 'blur' }
+          // { min: 11, max: 11, message: '用户名格式不正确', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },

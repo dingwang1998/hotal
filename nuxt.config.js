@@ -32,8 +32,10 @@ export default {
   */
   plugins: [
     '@/plugins/element-ui',
-     // 新增本地持久化的插件
-    { src: '~/plugins/localStorage.js', ssr: false }
+    // 新增本地持久化的插件
+    { src: '~/plugins/localStorage.js', ssr: false },
+    // 添加拦截器插件
+    '@/plugins/axios',
   ],
   /*
   ** Nuxt.js dev-modules
