@@ -1,6 +1,6 @@
 <template>
   <div class="flight-item">
-    <div>
+    <div @click="showInfo">
       <!-- 显示的机票信息 -->
       <el-row type="flex" align="middle" class="flight-info">
         <el-col :span="6">
@@ -27,7 +27,7 @@
         </el-col>
       </el-row>
     </div>
-    <div class="flight-recommend" v-for="(item,index) in data.seat_infos" :key="index">
+    <div class="flight-recommend" v-for="(item,index) in data.seat_infos" :key="index" v-show="isShow">
       <!-- 隐藏的座位信息列表 -->
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="4">低价推荐</el-col>
@@ -50,11 +50,23 @@
 
 <script>
 export default {
+  data(){
+    return{
+      // 是否显示座位列表
+      isShow:false,
+    }
+  },
   // props声明一个对象，用来接受父组件传过来的值
   props:{
     data:{
       type:Object,
       flights:{}
+    }
+  },
+  methods:{
+    // 是否显示作为列表
+    showInfo(){
+      this.isShow=!this.isShow
     }
   },
   mounted(){

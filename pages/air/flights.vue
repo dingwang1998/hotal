@@ -13,8 +13,25 @@
 
         <!-- 航班信息 -->
         <div>
-          <flightsItem v-for="(item,index) in flights" :key="index" :data="item"/>>
+          <flightsItem v-for="(item,index) in showList" :key="index" :data="item" />
         </div>
+
+        
+        <!-- 分页 -->
+        <!-- size-change切换条数触发的事情 -->
+        <!-- current-change切换页数的的时候触发 -->
+        <!-- current-page当前页数 -->
+        <!-- page-sizes当前显示条数 -->
+        <!-- total总条数 -->
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageIndex"
+          :page-size="pageSize"
+          :page-sizes="[5, 10, 15,]"
+          layout="total,sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
       </div>
 
       <!-- 侧边栏 -->
@@ -33,15 +50,42 @@ export default {
   data() {
     return {
       // 机票列表
-      flights:[],
+      flights: [],
+      // 当前页数
+      pageIndex: 1,
+      // 展示条数
+      pageSize: 5,
+      // 总条数
+      total:1,
+      // 每页展示的列表数组
+      showList:[]
     }
   },
-  mounted(){
-    this.$axios.get('/airs',{params:this.$route.query}).then(res=>{
-      const {flights} = res.data;
-      this.flights=flights;
-      console.log(this.flights);
-    });
+  mounted() {
+    this.$axios.get('/airs', { params: this.$route.query }).then(res => {
+      const { flights ,total} = res.data;
+      this.flights = flights;
+      this.total=total;
+      // 只渲染5条数据 slice（0，5） 不包含第5个
+      this.showList=this.flights.slice(0,this.pageSize);
+    })
+  },
+  methods: {
+    // 切换条数触发的事情
+    handleSizeChange(val) {
+      // val是每页展示${val}条数据
+      this.pageSize=val;
+      // 跳回到第一页
+      this.pageIndex=1;
+      // 重新展示数据
+      this.showList=this.flights.slice((this.pageIndex-1)*val,this.pageIndex*val)
+    },
+    // 切换页数的的时候触发
+    handleCurrentChange(val) {
+      this.showList=this.flights.slice((val-1)*this.pageSize,val*this.pageSize);
+      // 切换了页数，把当前页数赋值给pageIndex
+      this.pageIndex=val;
+    }
   },
   components: {
     flightsListHead,
