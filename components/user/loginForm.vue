@@ -55,10 +55,11 @@ export default {
         if(valid){
           // 调用actions方法用this.$store.dispatch固定写法,第一个参数是vuex存储的方法，第二个参数是要传过去的数据
           // await的结果用一个变量来存储
-          const data=await this.$store.dispatch('user/login',this.form);
+          const res=await this.$store.dispatch('user/login',this.form);
+          console.log(res);
+          
           // 弹窗提示
-          this.$message.success('登录成功'+data.user.nickname);
-          this.$router.push('/');
+          this.$message.success('登录成功'+res.user.nickname);
         }
       })
     }

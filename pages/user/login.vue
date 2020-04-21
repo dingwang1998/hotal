@@ -14,10 +14,9 @@
         </el-row>
 
         <!-- 登录功能组件 -->
-        <loginForm v-if="currentTab == 0"/>
-
+          <loginForm v-if="currentTab == 0" />
         <!-- 注册功能组件 -->
-        <registerForm v-if="currentTab == 1"/>
+          <registerForm v-if="currentTab == 1" />
       </div>
     </el-row>
   </div>
@@ -29,7 +28,7 @@ import registerForm from '@/components/user/registerForm.vue'
 export default {
   data() {
     return {
-        // 搜错框高亮
+      // 搜错框高亮
       currentTab: 0
     }
   },
@@ -38,9 +37,9 @@ export default {
       this.currentTab = index
     }
   },
-  components:{
-      loginForm,
-      registerForm
+  components: {
+    loginForm,
+    registerForm
   }
 }
 </script>

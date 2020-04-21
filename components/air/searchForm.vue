@@ -22,12 +22,7 @@
           </span>
         </el-row>
 
-        <el-form
-          class="search-form-content"
-          :model="form"
-          ref="form"
-          label-width="80px"
-        >
+        <el-form class="search-form-content" :model="form" ref="form" label-width="80px">
           <!-- 出发城市输入框 -->
           <el-form-item label="出发城市">
             <!-- fetch-suggestions 返回输入建议的方法 根据输入的关键字，发请求，返回的数据会出现在下拉列表中 -->
@@ -112,7 +107,22 @@
     </h2>
 
     <!-- 特价机票 -->
-    <div class="air-sale"></div>
+    <!-- 特价机票 -->
+    <div class="air-sale">
+      <el-row type="flex" class="air-sale-pic" justify="space-between">
+        <el-col :span="6" v-for="(item, index) in sales" :key="index">
+          <nuxt-link
+            :to="`/air/flights?departCity=${item.departCity}&departCode=${item.departCode}&destCity=${item.destCity}&destCode=${item.destCode}&departDate=${item.departDate}`"
+          >
+            <img :src="item.cover" />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>{{item.departCity}}-{{item.destCity}}</span>
+              <span>￥699</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+      </el-row>
+    </div>
   </section>
 </template>
 
@@ -145,6 +155,8 @@ export default {
           return time.getTime() < Date.now() - 3600 * 1000 * 24
         }
       },
+      // 特价机票
+      sales:[]
     }
   },
   methods: {
@@ -157,15 +169,20 @@ export default {
           callback: action => {}
         })
     },
+    // 封装
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     async queryDepartSearch(value, cb) {
-      if (!value) return
+      console.log(value)
+      if (!value) {
+        this.departCity = []
+        cb([])
+        return
+      }
       const res = await this.$axios.get('/airs/city', {
         params: { name: value }
       })
       const { data } = res.data
-      // console.log(data);
       const newData = data.map(v => {
         v.value = v.name.replace('市', '')
         return v
@@ -176,12 +193,14 @@ export default {
     // 目标城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数,cb里面接受一个数组，数组用对象形式存储信息，接收要展示的列表
     async queryDestSearch(value, cb) {
-      if (!value) return
+      if (!value) {
+        this.destCity = []
+        return
+      }
       const res = await this.$axios.get('/airs/city', {
         params: { name: value }
       })
       const { data } = res.data
-      console.log(data)
       const newData = data.map(v => {
         v.value = v.name.replace('市', '')
         return v
@@ -230,24 +249,35 @@ export default {
         { value: this.form.departCity === '', message: '请输入出发城市' },
         { value: this.form.destCity === '', message: '请输入目的地' },
         { value: this.form.departDate === '', message: '请输入出发日期' }
-      ];
+      ]
       // 开关思想
-      let flag = true;
+      let flag = true
       // 遍历数组中的value,只要有一个验证没通过，就阻止继续
-      arr.forEach(v=>{
-        if(!flag)return;
+      arr.forEach(v => {
+        if (!flag) return
         // 判断每一项的value是否为真
-        if(v.value==true){
+        if (v.value == true) {
           // 为真代表数值为空 就提醒用户要输入东西 然后把flag设置为false
-          this.$message.warning(v.message);
-          flag=false;
+          this.$message.warning(v.message)
+          flag = false
         }
-      });
+      })
       // 有一项不通过，就会停止执行，如果flag为true时候才会继续执行
-      if(!flag) return;
+      if (!flag) return;
+      // 以上验证完成后 实现跳转页面
+      this.$router.push({
+        path:'/air/flights',
+        query:this.form
+      })
     }
   },
-  mounted() {}
+  mounted() {
+    this.$axios.get('/airs/sale').then(res => {
+      const { data } = res.data;
+      console.log(data);
+      this.sales=data;
+    })
+  }
 }
 </script>
 
