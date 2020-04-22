@@ -6,7 +6,7 @@
       <!-- logo -->
       <div class="logo">
         <nuxt-link to="/">
-          <img src="@/assets/logo2.png" alt />
+          <img src="@/assets/logo4.png" alt />
         </nuxt-link>
       </div>
 

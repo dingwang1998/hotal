@@ -12,8 +12,9 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/mengyouwang.ico' },
-      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css'} //新增全局字体样式
+      // { rel: 'icon', type: 'image/x-icon', href: '/mengyouwang.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: 'http://demo.sc.chinaz.com/Files/pic/icons/7662/Bii3.png' },
+
     ]
   },
   /*

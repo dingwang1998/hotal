@@ -16,7 +16,7 @@
               <span>{{rankTime}}</span>
             </el-col>
             <el-col :span="8" class="flight-airport">
-              <strong>{{data.dep_time}}</strong>
+              <strong>{{data.arr_time}}</strong>
               <span>{{data.dst_airport_name}}{{data.dst_airport_quay}}</span>
             </el-col>
           </el-row>
