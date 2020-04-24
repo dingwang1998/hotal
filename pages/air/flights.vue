@@ -38,6 +38,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <flightsAside></flightsAside>
       </div>
     </el-row>
   </section>
@@ -47,6 +48,7 @@
 import flightsListHead from '@/components/air/flightsListHead.vue'
 import flightsItem from '@/components/air/flightsItem.vue'
 import flightsFilters from '@/components/air/flightsFilters.vue'
+import flightsAside from '@/components/air/flightsAside.vue'
 
 export default {
     data() {
@@ -56,8 +58,8 @@ export default {
                 flights: [], //机票信息
                 info: {}, //当前页的航信信息  单程那边显示的信息
                 options: {}
-			},
-			// 备份的数据一旦赋值后,就不可改变
+            },
+            // 备份的数据一旦赋值后,就不可改变
             copyData: {
                 flights: [], //机票信息
                 info: {}, //当前页的航信信息  单程那边显示的信息
@@ -68,22 +70,21 @@ export default {
             // 展示条数
             pageSize: 5,
             // 总条数
-            total: 1,
+            total: 1
         }
     },
     mounted() {
         this.$axios.get('/airs', { params: this.$route.query }).then(res => {
-
             // 将机票列表总数据保存在flightsData中
-			this.flightsData = res.data
+            this.flightsData = res.data
 
             // 并且备份一份数据
-			this.copyData = { ...res.data }
-			// console.log(this.copyData);
-			
+            this.copyData = { ...res.data }
+            // console.log(this.copyData);
+
             // 机票列表总数
             this.total = res.data.total
-		})
+        })
     },
     computed: {
         // 计算属性会监听函数内部所有实例的（即this）属性的变化
@@ -91,7 +92,8 @@ export default {
         dataList() {
             const arr = this.flightsData.flights.slice(
                 (this.pageIndex - 1) * this.pageSize,
-                this.pageIndex * this.pageSize)
+                this.pageIndex * this.pageSize
+            )
             return arr
         }
     },
@@ -107,19 +109,37 @@ export default {
         handleCurrentChange(val) {
             // 切换了页数，把当前页数赋值给pageIndex
             this.pageIndex = val
-		},
-		// 传递给子组件的事件
-		getList(arr){
-			// flightsData.flights是展示的数据
-			this.flightsData.flights=arr;
-			// 重置总条数
-			this.total=arr.length;
-		}
+        },
+        // 传递给子组件的事件
+        getList(arr) {
+            // flightsData.flights是展示的数据
+            this.flightsData.flights = arr
+            // 重置总条数
+            this.total = arr.length
+        }
+    },
+    // 监听本页的路由变化，一旦变化就重新获取数据
+    watch:{
+      $route(){
+         this.$axios.get('/airs', { params: this.$route.query }).then(res => {
+            // 将机票列表总数据保存在flightsData中
+            this.flightsData = res.data
+
+            // 并且备份一份数据
+            this.copyData = { ...res.data }
+            // console.log(this.copyData);
+
+            // 机票列表总数
+            this.total = res.data.total
+        })
+        
+      }
     },
     components: {
         flightsListHead,
         flightsItem,
-        flightsFilters
+        flightsFilters,
+        flightsAside,
     }
 }
 </script>

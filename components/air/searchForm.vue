@@ -173,7 +173,6 @@ export default {
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     async queryDepartSearch(value, cb) {
-      console.log(value)
       if (!value) {
         this.departCity = []
         cb([])
@@ -264,6 +263,10 @@ export default {
       })
       // 有一项不通过，就会停止执行，如果flag为true时候才会继续执行
       if (!flag) return;
+
+      // 将搜索记录保存在本地vuex的state中，通过调用mutations
+      this.$store.commit("air/setSearchList",this.form);
+
       // 以上验证完成后 实现跳转页面
       this.$router.push({
         path:'/air/flights',
@@ -274,7 +277,6 @@ export default {
   mounted() {
     this.$axios.get('/airs/sale').then(res => {
       const { data } = res.data;
-      console.log(data);
       this.sales=data;
     })
   }

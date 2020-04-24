@@ -11,22 +11,42 @@
         <!-- label是下拉框中显示的数据 -->
         <!-- 点击change事件打印的是value -->
         <el-select size="mini" v-model="airport" placeholder="起飞机场">
-          <el-option :label="item" :value="item" v-for="(item,index) in data.options.airport" :key="index"></el-option>
+          <el-option
+            :label="item"
+            :value="item"
+            v-for="(item,index) in data.options.airport"
+            :key="index"
+          ></el-option>
         </el-select>
       </el-col>
       <el-col :span="4">
         <el-select size="mini" v-model="flightTimes" placeholder="起飞时间">
-          <el-option :label="`${item.from}:00 - ${item.to}:00`" :value="`${item.from},${item.to}`" v-for="(item,index) in data.options.flightTimes" :key="index"></el-option>
+          <el-option
+            :label="`${item.from}:00 - ${item.to}:00`"
+            :value="`${item.from},${item.to}`"
+            v-for="(item,index) in data.options.flightTimes"
+            :key="index"
+          ></el-option>
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-select size="mini" v-model="company" placeholder="航空公司" >
-          <el-option :label="item" :value="item" v-for="(item,index) in data.options.company" :key="index"></el-option>
+        <el-select size="mini" v-model="company" placeholder="航空公司">
+          <el-option
+            :label="item"
+            :value="item"
+            v-for="(item,index) in data.options.company"
+            :key="index"
+          ></el-option>
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-select size="mini" v-model="airSize" placeholder="机型" >
-          <el-option :label="item.size" :value="item.value" v-for="(item,index) in airSizeList" :key="index"></el-option>
+        <el-select size="mini" v-model="airSize" placeholder="机型">
+          <el-option
+            :label="item.size"
+            :value="item.value"
+            v-for="(item,index) in airSizeList"
+            :key="index"
+          ></el-option>
         </el-select>
       </el-col>
     </el-row>
@@ -41,9 +61,9 @@
 <script>
 export default {
     props: {
-        data:{
-            type:Object,
-            default:{},
+        data: {
+            type: Object,
+            default: {}
         }
     },
     data() {
@@ -51,44 +71,48 @@ export default {
             airport: '', // 机场
             flightTimes: '', // 出发时间
             company: '', // 航空公司
-            airSize: '' ,// 机型大小
+            airSize: '', // 机型大小
             // 机型大小自己设定
-            airSizeList:[
-                {size:"大",value:'L'},
-                {size:"中",value:'M'},
-                {size:"小",value:'S'}
+            airSizeList: [
+                { size: '大', value: 'L' },
+                { size: '中', value: 'M' },
+                { size: '小', value: 'S' }
             ]
         }
     },
-    computed:{
-        filter(){
-            const filters=[
-                {key:'org_airport_name',value:this.airport},
-                {key:'dep_time',value:this.flightTimes},
-                {key:'airline_name',value:this.company},
-                {key:'plane_size',value:this.airSize}
+    computed: {
+        filter() {
+            const filters = [
+                { key: 'org_airport_name', value: this.airport },
+                { key: 'dep_time', value: this.flightTimes },
+                { key: 'airline_name', value: this.company },
+                { key: 'plane_size', value: this.airSize }
             ]
 
             // 过滤有值的条件加入筛选  如果下拉选了选项,就返回它对应的value,数组形式存储
-            const hasFilters=filters.filter(v=>{return v.value});
-            // console.log(hasFilters);
-            
-
-            const arr = this.data.flights.filter(v=>{
-                const valid=hasFilters.every(item=>{
-                    console.log(+item.value.split(',')[0]); //下拉框选的时间 [6,12]
-                    console.log(+v[item.key].split(':')[0]); //数据里的 出发时间
-                    
-                    // 下拉框的时间[0]<=出发时间<下拉框时间[1]
-                    
-                    // v[item.key]相当于filters的key
-                    return v[item.key]==item.value || +item.value.split(',')[0] <= +v[item.key].split(':')[0] && +v[item.key].split(':')[0] < +item.value.split(',')[1];
-                })
-                return valid;
+            const hasFilters = filters.filter(v => {
+                return v.value
             })
-            // console.log(arr);
-            
-            this.$emit('getList',arr)
+            // console.log(hasFilters);
+
+            const arr = this.data.flights.filter(v => {
+                const valid = hasFilters.every(item => {
+                // console.log(v[item.key]);
+                    // console.log(+item.value.split(',')[0]); //下拉框选的时间 [6,12]
+                    // console.log(+v[item.key].split(':')[0]); //数据里的 出发时间
+
+                    // 下拉框的时间[0]<=出发时间<下拉框时间[1] 符合筛选条件
+
+                    // v[item.key]相当于filters的key
+                    return (
+                        v[item.key] == item.value ||
+                        (+item.value.split(',')[0] <= +v[item.key].split(':')[0] &&
+                         +v[item.key].split(':')[0] < +item.value.split(',')[1])
+                    )
+                })
+                return valid //如果valid就返回符合条件的  新数组接收
+            })
+            this.$emit('getList', arr)
         }
     },
     methods: {
@@ -133,7 +157,12 @@ export default {
         // },
 
         // 撤销条件时候触发
-        handleFiltersCancel() {}
+        handleFiltersCancel() {
+            this.airport = ''
+            this.flightTimes = ''
+            this.company = ''
+            this.airSize = ''
+        }
     }
 }
 </script>
