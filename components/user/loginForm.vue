@@ -60,6 +60,7 @@ export default {
           
           // 弹窗提示
           this.$message.success('登录成功'+res.user.nickname);
+          this.$router.back();
         }
       })
     }

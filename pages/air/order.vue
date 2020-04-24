@@ -19,3 +19,17 @@ export default {
     }
 }
 </script>
+
+<style lang="less" scoped>
+    .container{
+        width:1000px;
+        margin:20px auto;
+    }
+    
+    /*aside*/
+    .aside{
+        width: 350px;
+        height: fit-content;
+        border:1px #ddd solid;
+    }
+</style>

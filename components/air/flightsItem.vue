@@ -70,9 +70,14 @@ export default {
     },
     //选定机票
     choseTicket(item){
+      console.log(item);
+      
       this.$router.push({
         path:'/air/order',
-        params:item
+        query:{
+          id:this.data.id,
+          seat_xid:item.seat_xid
+        }
       })
       
     }
