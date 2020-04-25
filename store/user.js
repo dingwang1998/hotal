@@ -44,8 +44,6 @@ export const actions = {
             }
         }).then(res => {
             const { code } = res.data;
-            console.log(code);
-
             return code;
         })
     },
