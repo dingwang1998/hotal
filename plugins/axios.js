@@ -18,7 +18,7 @@ export default function (nuxt) {
     return res;
   }, error => {
     const { statusCode, message } = error.response.data;
-    console.log(statusCode);
+    // console.log(statusCode);
     
     if (statusCode == 400) {
       Message.error('用户不存在')
