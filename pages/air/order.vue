@@ -5,17 +5,18 @@
             <OrderForm/>
 
             <!-- 其他代码... -->
-            
+             <OrderAside :data="$store.state.air.ticketData"/>
         </el-row>
     </div>
 </template>
 
 <script>
 import OrderForm from "@/components/air/orderForm.vue";
-
+import OrderAside from "@/components/air/OrderAside.vue";
 export default {
     components: {
         OrderForm,
+        OrderAside
     }
 }
 </script>

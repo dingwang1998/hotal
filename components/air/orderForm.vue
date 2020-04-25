@@ -115,7 +115,9 @@ export default {
 
         // 根据id和座位信息 请求当前机票信息
         this.$axios.get(`/airs/${id}`, this.form.seat_xid).then(res => {
-            this.ticketInfo = res.data
+            this.ticketInfo = res.data;
+            console.log(this.ticketInfo);
+            this.$store.commit('air/setticketData',this.ticketInfo);
             // console.log(this.ticketInfo);
         })
     },
