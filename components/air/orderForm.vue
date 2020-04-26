@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="air-column">
-      <h2>乘机人</h2>
+      <h2>乘机人 {{allPrice}}</h2>
       <el-form class="member-info" :rules="rules" :model="form" ref="form">
         <div class="member-info-item" v-for="(item,index) in form.users" :key="index">
           <el-form-item prop="users">
@@ -116,17 +116,29 @@ export default {
       }
     }
   },
+  computed:{
+      allPrice(){
+          if(!this.ticketInfo.seat_infos)return 0;
+
+      }
+  },
   mounted() {
     const { id, seat_xid } = this.$route.query
     this.form.air = id
     this.form.seat_xid = seat_xid
 
     // 根据id和座位信息 请求当前机票信息
-    this.$axios.get(`/airs/${id}`, this.form.seat_xid).then(res => {
-      this.ticketInfo = res.data
-      console.log(this.ticketInfo)
-      this.$store.commit('air/setticketData', this.ticketInfo)
-      // console.log(this.ticketInfo);
+    this.$axios({
+        url:'/airs/'+id,
+        params:{
+            seat_xid:seat_xid
+        }
+    }).then(res=>{
+        const{data}=res;
+    // //把机票的信息保存到data,里面有保险和右侧栏需要展示的数据
+        this.ticketInfo=data;
+        // //把详细信息保存到store中      
+      this.$store.commit('air/setticketData',data);
     })
   },
   methods: {
@@ -160,7 +172,6 @@ export default {
         this.form.insurances.push(id)
       }
     },
-
     // 提交订单
     handleSubmit() {
       this.$refs.form.validate(valid => {

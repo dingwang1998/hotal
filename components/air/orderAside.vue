@@ -51,9 +51,7 @@ export default {
     props: {
         data: {
             type: Object,
-            default: {
-                
-            }
+            default: {}
         }
     },
 
@@ -80,6 +78,12 @@ export default {
             return `${ Math.floor(dis / 60)}时${dis % 60}分`
         }
     },
+    mounted(){
+        console.log(this.data);
+        
+        console.log(this.$store.state.air.ticketData);
+        
+    }
 }
 </script>
 

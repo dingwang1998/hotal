@@ -71,6 +71,7 @@ export default {
     //选定机票
     choseTicket(item){
       console.log(item);
+      console.log(this.data);
       
       this.$router.push({
         path:'/air/order',
@@ -79,7 +80,6 @@ export default {
           seat_xid:item.seat_xid
         }
       })
-      
     }
   },
   mounted(){
