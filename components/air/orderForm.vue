@@ -72,27 +72,27 @@ export default {
   data() {
     // rule规则 value输入框的值  callback回调函数并且必须要调用
     const validatorUser = (rule, value, callback) => {
-    //   假设全部验证都通过
-    let valid=true;
-    // value是一个对象，比如{name:"a",id:'1'}
-    value.forEach(v=>{
+      //   假设全部验证都通过
+      let valid = true
+      // value是一个对象，比如{name:"a",id:'1'}
+      value.forEach(v => {
         // 如果有一个验证不通过，即可终止
-        if(valid===false) return;
+        if (valid === false) return
         // 如果username是空
-        if(v.username.trim()===''){
-            valid=false;
-            return callback(new Error('乘机人姓名不能为空'))
+        if (v.username.trim() === '') {
+          valid = false
+          return callback(new Error('乘机人姓名不能为空'))
         }
         // 如果乘机人证件号为空
-        if(v.id.trim()===""){
-            valid=false;
-            return callback(new Error('乘机人证件号不能为空'))
+        if (v.id.trim() === '') {
+          valid = false
+          return callback(new Error('乘机人证件号不能为空'))
         }
         // 如果所有都验证通过
-        if(valid){
-            callback();
+        if (valid) {
+          callback()
         }
-    })
+      })
     }
     return {
       form: {
@@ -109,7 +109,7 @@ export default {
       ticketInfo: [],
       // 验证表单的规则对象
       rules: {
-        users: [{ validator: validatorUser ,trigger: "blur"}],
+        users: [{ validator: validatorUser, trigger: 'blur' }],
         contactName: [{ required: true, message: '联系人姓名不能为空' }],
         contactPhone: [{ required: true, message: '联系人电话不能为空' }],
         captcha: [{ required: true, message: '验证码不能为空' }]
@@ -163,13 +163,9 @@ export default {
 
     // 提交订单
     handleSubmit() {
-        this.$refs.form.validate(valid => {
-            if (valid) {
-            console.log(22);
-            
+      this.$refs.form.validate(valid => {
+        if (valid) {
           this.$refs.form2.validate(valid2 => {
-              console.log(111);
-              
             if (valid2) {
               // 创建订单
               this.$axios({
@@ -183,6 +179,11 @@ export default {
                 data: this.form
               }).then(res => {
                 this.$message.success('订单提交成功')
+                // 跳转到支付页面
+                const { id } = res.data.data
+                this.$router.push({
+                  path: '/air/pay'
+                })
               })
             }
           })
