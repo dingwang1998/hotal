@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="air-column">
-      <h2>乘机人 {{allPrice}}</h2>
+      <h2>乘机人</h2>
       <el-form class="member-info" :rules="rules" :model="form" ref="form">
         <div class="member-info-item" v-for="(item,index) in form.users" :key="index">
           <el-form-item prop="users">
@@ -25,7 +25,7 @@
         </div>
       </el-form>
       <!-- 添加乘机人 -->
-      <el-button class="add-member" type="primary" @click="handleAddUsers(index)">添加乘机人</el-button>
+      <el-button class="add-member" type="primary" @click="handleAddUsers">添加乘机人</el-button>
     </div>
 
     <div class="air-column">
@@ -64,6 +64,9 @@
         <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
       </div>
     </div>
+    
+    <!-- 计算属性一定要渲染才有效果 -->
+    <div v-show="false">{{allPrice}}</div>
   </div>
 </template>
 
@@ -119,7 +122,25 @@ export default {
   computed:{
       allPrice(){
           if(!this.ticketInfo.seat_infos)return 0;
-
+            let price=0;
+            //先算出基础机票价格
+            price=this.ticketInfo.seat_infos.org_settle_price+this.ticketInfo.airport_tax_audlet;
+            //循环 选中的保险 的数组 查看是否有选保险业务
+            this.form.insurances.forEach(v=>{
+                // 循环机票信息里的保险数组，主要是拿到保险单价
+                this.ticketInfo.insurances.forEach(item=>{
+                    // 判断选中的保险id 和 保险数组对应
+                    if(v=item){
+                        price+=item.price;
+                    }
+                })
+            })
+            // 判断多少乘机人
+            price *=this.form.users.length;
+            // 将计算出的价格保存到store中，传值给Aside
+            this.$store.commit('air/setallPrice',price);
+            // 计算属性记得return
+            return price;
       }
   },
   mounted() {
