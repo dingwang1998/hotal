@@ -68,7 +68,6 @@ export default {
         }
       })
       console.log(checkPayState)
-
       //判断是否支付完成
       if (checkPayState.data.statusTxt == '支付完成') {
         this.$alert('订单支付完成', '温馨提示', {
@@ -81,6 +80,9 @@ export default {
         clearInterval(this.timer)
       }
     }, 3000)
+  },
+  destroyed(){
+      clearInterval(timer);
   }
 }
 </script>

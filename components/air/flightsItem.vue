@@ -69,7 +69,7 @@ export default {
   props: {
     data: {
       type: Object,
-      flights: {}
+      flights: {},
     }
   },
   methods: {
@@ -83,7 +83,10 @@ export default {
       //   console.log(this.data)
     }
   },
-  mounted() {},
+  mounted() {
+      console.log(this.data);
+      
+  },
   computed: {
     rankTime() {
       const dep = this.data.dep_time //[10:50]
