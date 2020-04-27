@@ -212,9 +212,13 @@ export default {
               }).then(res => {
                 this.$message.success('订单提交成功')
                 // 跳转到支付页面
-                const { id } = res.data.data
+                const { id } = res.data.data;
+                // console.log(id);
                 this.$router.push({
-                  path: '/air/pay'
+                  path: '/air/pay',
+                  query:{
+                      id:id
+                  }
                 })
               })
             }
