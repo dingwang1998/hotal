@@ -4,7 +4,8 @@
       <!-- 显示的机票信息 -->
       <el-row type="flex" align="middle" class="flight-info">
         <el-col :span="6">
-          <span>{{data.airline_name}}</span> {{data.flight_no}}
+          <span>{{data.airline_name}}</span>
+          {{data.flight_no}}
         </el-col>
         <el-col :span="12">
           <el-row type="flex" justify="space-between" class="flight-info-center">
@@ -27,18 +28,26 @@
         </el-col>
       </el-row>
     </div>
-    <div class="flight-recommend" v-for="(item,index) in data.seat_infos" :key="index" v-show="isShow">
+    <div
+      class="flight-recommend"
+      v-for="(item,index) in data.seat_infos"
+      :key="index"
+      v-show="isShow"
+    >
       <!-- 隐藏的座位信息列表 -->
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="4">低价推荐</el-col>
         <el-col :span="20">
           <el-row type="flex" justify="space-between" align="middle" class="flight-sell">
             <el-col :span="16" class="flight-sell-left">
-              <span>{{item.group_name}}</span> | {{item.supplierName}}
+              <span>{{item.group_name}}</span>
+              | {{item.supplierName}}
             </el-col>
             <el-col :span="5" class="price">￥{{item.org_settle_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini" @click="choseTicket(item)">选定</el-button>
+              <nuxt-link :to="{path: `/air/order`, query: {id: data.id,seat_xid: item.seat_xid} }">
+                <el-button type="warning" size="mini" @click="choseTicket(item)">选定</el-button>
+              </nuxt-link>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -50,54 +59,45 @@
 
 <script>
 export default {
-  data(){
-    return{
+  data() {
+    return {
       // 是否显示座位列表
-      isShow:false,
+      isShow: false
     }
   },
   // props声明一个对象，用来接受父组件传过来的值
-  props:{
-    data:{
-      type:Object,
-      flights:{}
+  props: {
+    data: {
+      type: Object,
+      flights: {}
     }
   },
-  methods:{
+  methods: {
     // 是否显示作为列表
-    showInfo(){
-      this.isShow=!this.isShow
+    showInfo() {
+      this.isShow = !this.isShow
     },
     //选定机票
-    choseTicket(item){
-      console.log(item);
-      console.log(this.data);
-      
-      this.$router.push({
-        path:'/air/order',
-        query:{
-          id:this.data.id,
-          seat_xid:item.seat_xid
-        }
-      })
+    choseTicket(item) {
+      //   console.log(item)
+      //   console.log(this.data)
     }
   },
-  mounted(){
-  },
-  computed:{
-    rankTime(){
-      const dep=this.data.dep_time;//[10:50]
-      const arr=this.data.arr_time;//[12:30]
+  mounted() {},
+  computed: {
+    rankTime() {
+      const dep = this.data.dep_time //[10:50]
+      const arr = this.data.arr_time //[12:30]
 
-      const end=arr.split(":")//[12,30]
-      const start=dep.split(":")//[10,50]
+      const end = arr.split(':') //[12,30]
+      const start = dep.split(':') //[10,50]
 
       // 间隔时间分钟
-      const dis=(end[0]*60+ +end[1])+-(start[0]*60+ +start[1]);
+      const dis = end[0] * 60 + +end[1] + -(start[0] * 60 + +start[1])
       // 换算成小时
-      const hour=Math.floor(dis/60);
+      const hour = Math.floor(dis / 60)
       // 换算分钟
-      const min=dis%60;
+      const min = dis % 60
 
       return `${hour}时${min}分`
     }

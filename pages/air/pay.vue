@@ -36,24 +36,6 @@ export default {
   },
   mounted() {
     //资源加载后，要获取订单详情。 而mounted资源加载就执行，还没有等待获取机票信息，用setTimeout延迟下
-    // setTimeout(() => {
-    //   this.$axios({
-    //     url: '/airorders/' + this.$route.query.id,
-    //     headers: {
-    //       Authorization: `Bearer ` + this.$store.state.user.userJson.token
-    //     }
-    //   }).then(res => {
-    //     this.ticketInfo = res.data
-    //     console.log(this.ticketInfo)
-    //     //price 用于展示
-    //     const { payInfo, price } = res.data
-    //     // 生成二维码到canvas
-    //     const stage = document.querySelector('#qrcode-stage')
-    //     QRCode.toCanvas(stage, payInfo.code_url, {
-    //       width: 200
-    //     })
-    //   })
-    // }, 20)
     setTimeout(async () => {
       const res = await this.$axios({
         url: '/airorders/' + this.$route.query.id,

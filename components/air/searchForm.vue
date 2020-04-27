@@ -64,11 +64,11 @@ export default {
     return {
       // 表单的数据
       form: {
-        departCity: '', // 出发城市
-        destCity: '', //到达城市
-        departCode: '', // 出发城市的字母代码
-        destCode: '', // 到达城市的字母代码
-        departDate: '' // 出发日期
+        departCity: "", // 出发城市
+        destCity: "", //到达城市
+        departCode: "", // 出发城市的字母代码
+        destCode: "", // 到达城市的字母代码
+        departDate: "" // 出发日期
       },
       tabs: [
         { icon: 'iconfont icondancheng', name: '单程' },
@@ -165,6 +165,8 @@ export default {
 
     // 提交表单是触发
     handleSubmit() {
+        console.log(this.form);
+        
       const arr = [
         {
           value: this.form.departCity === '',
