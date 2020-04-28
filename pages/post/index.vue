@@ -8,121 +8,25 @@
           <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
+            active-text-color="#409eff"
             @open="handleOpen"
             @close="handleClose"
           >
-            <el-submenu index="1">
+            <el-submenu :index="''+index" v-for="(item,index) in hotCity" :key="index">
               <template slot="title">
                 <i class="el-icon-star-on"></i>
-                <span>热门城市</span>
+                <span>{{item.type}}</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="1-1" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="1-2" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="1-3" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="1-4" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-
-            <el-submenu index="2">
-              <template slot="title">
-                <i class="el-icon-star-on"></i>
-                <span>热门城市</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="2-1" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="2-2" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="2-3" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="2-4" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-
-            <el-submenu index="3">
-              <template slot="title">
-                <i class="el-icon-star-on"></i>
-                <span>热门城市</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="3-1" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="3-2" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="3-3" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="3-4" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-
-            <el-submenu index="4">
-              <template slot="title">
-                <i class="el-icon-star-on"></i>
-                <span>热门城市</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="4-1" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="4-2" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="4-3" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
-                </el-menu-item>
-                <el-menu-item index="4-4" class="city-info">
-                  <span>1</span>
-                  <span>北京</span>
-                  <span>世界著名古都和现代国际化城市</span>
+                <el-menu-item
+                  :index="1-index2"
+                  class="city-info"
+                  v-for="(item2,index2) in item.children"
+                  :key="index2"
+                >
+                  <span class="cities">{{index2+1}}</span>
+                  <span class="cities">{{item2.city}}</span>
+                  <span>{{item2.desc}}</span>
                 </el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -139,7 +43,7 @@
         <div class="post-wrapper">
           <el-input
             placeholder="请输入想去的地方,比如 ' 广州 '"
-            suffix-icon="el-icon-date"
+            suffix-icon="el-icon-search"
             v-model="searchCity"
           ></el-input>
           <div class="hot-city">
@@ -155,68 +59,60 @@
           </div>
 
           <!-- 文章列表 -->
-          <div class="post-list">
-            <div class="postone">
-              <h3>又抓了一批“女主播”！聊天记录曝光……</h3>
-              <p>
-                这些都是美女骗局的把戏!警方调查后发现确实有“雨晴”这个人,和林先生视频的的确是“雨晴”,
-                但和林先生聊天的又并非“雨晴”,这是怎么回事。因为这是一个架构清晰、组织严密、分工明确、
-                涉案人员众多的诈骗犯罪团伙!朱某负责注册公司,并聘用江某成为公司主播。为了快速牟取利用,
-              </p>
+          <div class="post-list" v-for="item in totalList" :key="item.id">
+            <div class="postone" v-if="item.images.length>=3">
+              <h3>{{item.title}}</h3>
+              <p>{{item.summary}}</p>
               <div class="post-img">
-                <img
-                  src="https://p3.pstatp.com/list/190x124/pgc-image/b254654ed20f4db39caebb68e95f7e0e"
-                />
-                <img src="https://p1.pstatp.com/list/190x124/pgc-image/RxLYDsX4gMQHwN" />
-                <img src="https://p3.pstatp.com/list/190x124/pgc-image/RxKLmJ2FNUp42s" />
+                <img :src="item2" v-for="(item2,index2) in item.images" :key="index2" />
               </div>
               <div class="post-info">
                 <div class="info-left">
-                  <i class="el-icon-edit">北京市</i>
+                  <i class="el-icon-edit">{{item.cityName}}</i>
                   <span>by</span>
-                  <img
-                    src="https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3744215463,383557679&fm=26&gp=0.jpg"
-                  />
-                  <a href="#" class="stylecolor">地球发动机</a>
-                  <i class="el-icon-view">15024</i>
+                  <img :src="$axios.defaults.baseURL+item.account.defaultAvatar" />
+                  <a href="#" class="stylecolor">{{item.account.nickname}}</a>
+                  <i class="el-icon-view">{{item.watch}}</i>
                 </div>
                 <div class="info-right">
-                  <span class="stylecolor">80赞</span>
+                  <span class="stylecolor">{{item.like}}赞</span>
                 </div>
               </div>
             </div>
 
-
-            <div class="posttwo">
+            <div class="posttwo" v-if="item.images.length<3 && item.images.length !=0">
               <div class="left-img">
-                <img
-                  src="http://p1-tt.byteimg.com/list/190x124/dfic-imagehandler/9f747eec-31d3-4a7d-87b2-8b9538e3e600"
-                />
+                <img :src="item.images" />
               </div>
               <div class="right-post">
-                <h3>又抓了一批“女主播”！聊天记录曝光……</h3>
-                <p>
-                  这些都是美女骗局的把戏!警方调查后发现确实有“雨晴”这个人,和林先生视频的的确是“雨晴”,
-                  但和林先生聊天的又并非“雨晴”,这是怎么回事。因为这是一个架构清晰、组织严密、分工明确、
-                  但和林先生聊天的又并非“雨晴”,这是怎么回事。
-                </p>
+                <h3>{{item.title}}</h3>
+                <p>{{item.summary}}</p>
                 <div class="sec-info">
-                  <div class='sec-info-action'>
-                    <i class="el-icon-edit">北京市</i>
+                  <div class="sec-info-action">
+                    <i class="el-icon-edit">{{item.cityName}}</i>
                     <span>by</span>
-                    <img
-                      src="https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3744215463,383557679&fm=26&gp=0.jpg"
-                    />
-                    <a href="#" class="stylecolor">地球发动机</a>
-                    <i class="el-icon-view">15024</i>
+                    <img :src="$axios.defaults.baseURL+item.account.defaultAvatar" />
+                    <a href="#" class="stylecolor">{{item.account.nickname}}</a>
+                    <i class="el-icon-view">{{item.watch}}</i>
                   </div>
                   <div class="right-zan">
-                      <span class="stylecolor">80赞</span>
+                    <span class="stylecolor">{{item.like}}赞</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- 分页功能 -->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="form.pagenum"
+            :page-size="form.pagesize"
+            layout="total,prev, pager, next, jumper"
+            :total="total"
+            background
+          ></el-pagination>
         </div>
       </el-col>
     </el-row>
@@ -227,13 +123,42 @@
 export default {
     data() {
         return {
+            form: {
+                pagenum: 1,//当前页数
+                pagesize: 3//每页显示多少
+            },
+            // 左侧推荐城市数组
+            hotCity: [],
+            //右侧的文章列表数据
+            totalList: [],
+            //总文章条数
+            total: 0,
             // 搜索城市的输入框值
             searchCity: ''
         }
     },
+    async mounted() {
+        //获取左侧推荐
+        const res = await this.$axios.get('/posts/cities')
+        const { data } = res.data
+        this.hotCity = data;
+        this.getPost();
+    },
     methods: {
+        //获取文章列表
+        async getPost() {
+            // 获取文章列表
+            const postdata = await this.$axios.get('/posts')
+            this.totalList = postdata.data.data
+            this.total = postdata.data.total
+            console.log(this.totalList)
+        },
         handleOpen() {},
-        handleClose() {}
+        handleClose() {},
+        //切换每页显示多少条
+        handleSizeChange() {},
+        //切换页数
+        handleCurrentChange() {}
     }
 }
 </script>
@@ -245,12 +170,7 @@ export default {
     padding: 20px 0;
 }
 .menus-wrapper {
-    // height: 100vh;
     box-sizing: border-box;
-    /deep/ .el-submenu__title {
-        height: 40px;
-        line-height: 40px;
-    }
     /deep/ .el-menu-item {
         padding-left: 0px !important;
         padding-right: 0px !important;
@@ -279,15 +199,19 @@ export default {
         white-space: nowrap;
     }
 }
-// .post-wrapper {
-//     // height: 100vh;
-// }
 /deep/ .el-input--suffix .el-input__inner {
     outline: none;
     outline-style: none; /*去掉轮廓线*/
     border: 2px solid #ff6700;
 }
-
+/deep/ .el-submenu__title {
+    padding: 0 !important;
+}
+.cities {
+    font-size: 20px;
+    color: #ff6700;
+    margin-right: 10px;
+}
 .post-wrapper {
     padding: 0 20px;
     .hot-city {
@@ -315,11 +239,9 @@ export default {
     }
 }
 .post-list {
-    padding: 10px 0;
     .postone {
         padding: 10px 0;
         border-bottom: 1px solid #eee;
-        margin-bottom: 10px;
         h3 {
             margin-bottom: 10px;
             cursor: pointer;
@@ -328,16 +250,25 @@ export default {
             color: #ff6700;
         }
         p {
-            font-size: 14px;
+            font-size: 16px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
         .post-img {
-            padding: 15px 0;
+            width: 100%;
+            height: 160px;
+            padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: nowrap;
+            overflow: hidden;
             img {
-                width: 32%;
+                width: 33%;
+                margin-right: 10px;
+                height: 100%;
             }
         }
     }
@@ -370,26 +301,26 @@ export default {
     padding: 10px 0;
     height: 172.17px;
     border-bottom: 1px solid #eee;
-    h3:hover{
+    h3:hover {
         color: #ff6700;
         cursor: pointer;
     }
-    .left-img{
+    .left-img {
         width: 32%;
-        img{
+        img {
             width: 227.19px;
-            height:148.27px;
+            height: 148.27px;
         }
     }
 }
-.sec-info{
+.sec-info {
     display: flex;
     justify-content: space-between;
-    img{
+    img {
         width: 20px;
         border-radius: 50%;
     }
-    .sec-info-action{
+    .sec-info-action {
         font-size: 12px;
         display: flex;
         justify-content: space-evenly;
@@ -397,11 +328,21 @@ export default {
         width: 220px;
     }
 }
-.right-post{
+.right-post {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     margin-left: 15px;
     height: 100%;
+    p {
+        font-size: 16px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+}
+.el-input {
+    color: #ff6700;
 }
 </style>

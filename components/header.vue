@@ -97,13 +97,13 @@ export default {
       &:hover,
       &:focus,
       &:active {
-        border-bottom: 5px #5573b7 solid;
+        border-bottom: 5px #409eff solid;
         color: #5573b7;
       }
     }
 
     /deep/ .nuxt-link-exact-active {
-      background: #5573b7;
+      background: #409eff;
       color: #fff !important;
     }
   }
