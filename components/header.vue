@@ -79,7 +79,8 @@ export default {
     img {
       display: block;
       width: 100%;
-      transform: scale(1.4);
+      transform: scale(1.2);
+      margin-left: 15px;
     }
   }
 
