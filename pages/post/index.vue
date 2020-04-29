@@ -13,6 +13,7 @@
             @open="handleOpen"
             @close="handleClose"
           >
+            <!-- <el-submenu :index="''+index" v-for="(item,index) in hotCity" :key="index"> -->
             <el-submenu :index="''+index" v-for="(item,index) in hotCity" :key="index">
               <template slot="title">
                 <i class="el-icon-star-on"></i>
@@ -21,7 +22,7 @@
               <el-menu-item-group>
                 <el-menu-item
                 :unique-opened="true"
-                  :index="1-index2"
+                  :index="''+(1-index2)"
                   class="city-info"
                   v-for="(item2,index2) in item.children"
                   :key="index2"
