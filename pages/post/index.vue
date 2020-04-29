@@ -6,6 +6,7 @@
         <!-- 左侧导航栏 -->
         <div class="menus-wrapper">
           <el-menu
+          :unique-opened="true"
             default-active="2"
             class="el-menu-vertical-demo"
             active-text-color="#409eff"
@@ -19,10 +20,12 @@
               </template>
               <el-menu-item-group>
                 <el-menu-item
+                :unique-opened="true"
                   :index="1-index2"
                   class="city-info"
                   v-for="(item2,index2) in item.children"
                   :key="index2"
+                @click="leftCommondCity(item2)"
                 >
                   <span class="cities">{{index2+1}}</span>
                   <span class="cities">{{item2.city}}</span>
@@ -201,7 +204,11 @@ export default {
         },
         // 搜索城市
         searchCityForm(){
-            this.getPost(this.form._start,this.form._limit,this.searchCity)
+            if(this.searchCity){
+                this.getPost(this.form._start,this.form._limit,this.searchCity)
+            }else{
+                this.getPost(this.form._start,this.form._limit,null)
+            }
         },
         //点击删除搜索文字
         clearSearchPost(){
@@ -210,6 +217,11 @@ export default {
         //点击搜索城市添加到输入框
         chooseCity(name){
             this.searchCity=name;
+            this.getPost(this.form._start,this.form._limit,this.searchCity)
+        },
+        //点击左侧推荐城市弹出文章
+        leftCommondCity(item2){
+            this.searchCity=item2.city
             this.getPost(this.form._start,this.form._limit,this.searchCity)
         }
     }
