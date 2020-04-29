@@ -213,6 +213,8 @@ export default {
         },
         //点击删除搜索文字
         clearSearchPost(){
+            this.form._start=0;
+            this.form._limit=3;
             this.getPost(this.form._start,this.form._limit);
         },
         //点击搜索城市添加到输入框
