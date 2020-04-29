@@ -80,7 +80,7 @@
               </div>
             </div>
 
-            <div class="posttwo" v-if="item.images.length<3 && item.images.length !=0">
+            <div class="posttwo" v-if="item.images.length<3">
               <div class="left-img">
                 <img :src="item.images" />
               </div>
@@ -107,9 +107,10 @@
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="form.pagenum"
-            :page-size="form.pagesize"
-            layout="total,prev, pager, next, jumper"
+            :page-sizes="[3, 5, 10]"
+            :current-page="form._start"
+            :page-size="form._limit"
+            layout="total,sizes,prev, pager, next, jumper"
             :total="total"
             background
           ></el-pagination>
@@ -124,8 +125,8 @@ export default {
     data() {
         return {
             form: {
-                pagenum: 1,//当前页数
-                pagesize: 3//每页显示多少
+                _start: 0,//当前页数
+                _limit: 3//每页显示多少
             },
             // 左侧推荐城市数组
             hotCity: [],
@@ -148,7 +149,7 @@ export default {
         //获取文章列表
         async getPost() {
             // 获取文章列表
-            const postdata = await this.$axios.get('/posts')
+            const postdata = await this.$axios.get('/posts',{params:{_start:this.form._start,_limit:this.form._limit}})
             this.totalList = postdata.data.data
             this.total = postdata.data.total
             console.log(this.totalList)
@@ -156,9 +157,16 @@ export default {
         handleOpen() {},
         handleClose() {},
         //切换每页显示多少条
-        handleSizeChange() {},
+        handleSizeChange(page) {
+            this.form._start=0;
+            this.form._limit=page;
+            this.getPost();
+        },
         //切换页数
-        handleCurrentChange() {}
+        handleCurrentChange(value) {
+            this.form._start=value;
+            this.getPost();
+        }
     }
 }
 </script>
