@@ -55,12 +55,13 @@
           <!-- 推荐攻略 -->
           <div class="recommend-plan">
             <h3>推荐攻略</h3>
-            <el-button type="primary" icon="el-icon-edit" size="medium ">梦游笔记</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="medium" @click="$router.push('/post/create')">梦游笔记</el-button>
           </div>
 
           <!-- 文章列表 -->
           <div class="post-list" v-for="item in totalList" :key="item.id">
-            <div class="postone" v-if="item.images.length>=3">
+
+            <div class="postone" v-if="item.images.length>=3" @click="toPostDetail(item)">
               <h3>{{item.title}}</h3>
               <p>{{item.summary}}</p>
               <div class="post-img">
@@ -79,8 +80,7 @@
                 </div>
               </div>
             </div>
-
-            <div class="posttwo" v-if="item.images.length<3">
+            <div class="posttwo" v-if="item.images.length<3" @click="toPostDetail(item)">
               <div class="left-img">
                 <img :src="item.images" />
               </div>
@@ -166,6 +166,16 @@ export default {
         handleCurrentChange(value) {
             this.form._start=value;
             this.getPost();
+        },
+        //点击文章，跳转到文章详情
+        toPostDetail(item){
+            console.log(item);
+            this.$router.push({
+                path:`/post/detail`,
+                query:{
+                    id:item.id
+                }
+            })
         }
     }
 }
@@ -250,6 +260,7 @@ export default {
     .postone {
         padding: 10px 0;
         border-bottom: 1px solid #eee;
+        cursor: pointer;
         h3 {
             margin-bottom: 10px;
             cursor: pointer;
