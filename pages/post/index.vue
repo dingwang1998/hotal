@@ -41,26 +41,38 @@
       <!-- 右侧导航栏 -->
       <el-col :span="18">
         <div class="post-wrapper">
-          <el-input
-            placeholder="请输入想去的地方,比如 ' 广州 '"
-            suffix-icon="el-icon-search"
-            v-model="searchCity"
-          ></el-input>
+          <el-row>
+            <el-col :span="20">
+              <el-input
+                placeholder="请输入想去的地方,比如 ' 广州 '"
+                prefix-icon="el-icon-search"
+                v-model="searchCity"
+                @input="searchCityForm"
+                clearable 
+                @clear="clearSearchPost"
+              ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="primary" style="margin-left:18px" @click="searchCityForm">搜索城市</el-button>
+            </el-col>
+          </el-row>
           <div class="hot-city">
             <span>推荐</span>
-            <a href="#">广州</a>
-            <a href="#">上海</a>
-            <a href="#">北京</a>
+            <a href="#" v-for="(item,index) in commondCitySearch" :key="index" @click="chooseCity(item.name)">{{item.name}}</a>
           </div>
           <!-- 推荐攻略 -->
           <div class="recommend-plan">
             <h3>推荐攻略</h3>
-            <el-button type="primary" icon="el-icon-edit" size="medium" @click="$router.push('/post/create')">梦游笔记</el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="medium"
+              @click="$router.push('/post/create')"
+            >梦游笔记</el-button>
           </div>
 
           <!-- 文章列表 -->
           <div class="post-list" v-for="item in totalList" :key="item.id">
-
             <div class="postone" v-if="item.images.length>=3" @click="toPostDetail(item)">
               <h3>{{item.title}}</h3>
               <p>{{item.summary}}</p>
@@ -125,9 +137,15 @@ export default {
     data() {
         return {
             form: {
-                _start: 0,//当前页数
-                _limit: 3//每页显示多少
+                _start: 0, //当前页数
+                _limit: 3 //每页显示多少
             },
+            //推荐搜索关键字
+            commondCitySearch:[
+                {name:'广州'},
+                {name:'上海'},
+                {name:'北京'}
+            ],
             // 左侧推荐城市数组
             hotCity: [],
             //右侧的文章列表数据
@@ -135,47 +153,64 @@ export default {
             //总文章条数
             total: 0,
             // 搜索城市的输入框值
-            searchCity: ''
+            searchCity: '',
         }
     },
     async mounted() {
         //获取左侧推荐
         const res = await this.$axios.get('/posts/cities')
         const { data } = res.data
-        this.hotCity = data;
-        this.getPost();
+        this.hotCity = data
+        this.getPost(this.form._start,this.form._limit,null)
     },
     methods: {
         //获取文章列表
-        async getPost() {
+        async getPost(one,two,three=null) {
             // 获取文章列表
-            const postdata = await this.$axios.get('/posts',{params:{_start:this.form._start,_limit:this.form._limit}})
+            const postdata = await this.$axios.get('/posts', {
+                params: { _start: one, _limit: two,city:three}
+            })
             this.totalList = postdata.data.data
             this.total = postdata.data.total
-            console.log(this.totalList)
         },
         handleOpen() {},
         handleClose() {},
         //切换每页显示多少条
         handleSizeChange(page) {
-            this.form._start=0;
-            this.form._limit=page;
-            this.getPost();
+            this.form._start = 0
+            this.form._limit = page
+            this.getPost(this.form._start,this.form._limit,this.searchCity)
         },
         //切换页数
         handleCurrentChange(value) {
-            this.form._start=value;
-            this.getPost();
+            this.form._start = value;
+            if(value==1){
+                this.form._start=value-1
+            }
+            this.getPost(this.form._start,this.form._limit,null)
         },
         //点击文章，跳转到文章详情
-        toPostDetail(item){
-            console.log(item);
+        toPostDetail(item) {
+            console.log(item)
             this.$router.push({
-                path:`/post/detail`,
-                query:{
-                    id:item.id
+                path: `/post/detail`,
+                query: {
+                    id: item.id
                 }
             })
+        },
+        // 搜索城市
+        searchCityForm(){
+            this.getPost(this.form._start,this.form._limit,this.searchCity)
+        },
+        //点击删除搜索文字
+        clearSearchPost(){
+            this.getPost(this.form._start,this.form._limit);
+        },
+        //点击搜索城市添加到输入框
+        chooseCity(name){
+            this.searchCity=name;
+            this.getPost(this.form._start,this.form._limit,this.searchCity)
         }
     }
 }
@@ -217,10 +252,12 @@ export default {
         white-space: nowrap;
     }
 }
-/deep/ .el-input--suffix .el-input__inner {
+/deep/ .el-col>.el-input>.el-input__inner{
     outline: none;
     outline-style: none; /*去掉轮廓线*/
-    border: 2px solid #ff6700;
+    border: none;
+    border: 2px solid #409eff;
+    border-radius: 4px;
 }
 /deep/ .el-submenu__title {
     padding: 0 !important;
@@ -245,11 +282,15 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #ff9d00;
+        .el-button--primary{
+            background-color: #ff9d00!important;
+            border-color: #ff9d00;
+        }
         h3 {
             padding: 15px 0;
-            border-bottom: 2px solid #ff6700;
-            color: #ff6700;
+            border-bottom: 2px solid #ff9d00;
+            color: #ff9d00;
         }
         .el-button--medium {
             padding: 12px 10px;
@@ -361,7 +402,7 @@ export default {
         -webkit-box-orient: vertical;
     }
 }
-.el-input {
-    color: #ff6700;
+/deep/ .el-pagination{
+    margin-top: 15px;
 }
 </style>
