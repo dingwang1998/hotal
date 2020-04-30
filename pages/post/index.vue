@@ -195,7 +195,6 @@ export default {
         },
         //点击文章，跳转到文章详情
         toPostDetail(item) {
-            console.log(item)
             this.$router.push({
                 path: `/post/detail`,
                 query: {
