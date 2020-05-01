@@ -27,6 +27,10 @@ export default function (nuxt) {
       Message.error('当前没有登录页');
       nuxt.redirect('/user/login')
     };
+    if(statusCode==403){
+      Message.error('发表评论需要登陆账户');
+      nuxt.redirect('/user/login');
+    }
     return Promise.reject(error)
   })
 }

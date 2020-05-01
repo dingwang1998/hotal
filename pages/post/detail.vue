@@ -36,7 +36,9 @@
           <div class="upload">
             <div class="upload-left">
               <el-upload
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :action="$axios.defaults.baseURL+`/upload`"
+                :headers="{
+                Authorization: `Bearer ` + $store.state.user.userJson.token}"
                 list-type="picture-card"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
@@ -49,7 +51,7 @@
               </el-dialog>
             </div>
             <div class="upload-right">
-              <el-button type="primary" size="mini">提交</el-button>
+              <el-button type="primary" size="mini" @click="submitBtn">提交</el-button>
             </div>
           </div>
 
@@ -190,15 +192,41 @@ export default {
         handleRemove() {},
         //点击切换页数
         handleSizeChange(page) {
-            this.limit=page;
+            this.limit = page
             this.commentList(this.limit, this.start)
         },
         // 每页显示多少内容
         handleCurrentChange(value) {
-            console.log(value);
-            if(value===1)value=0;
-            this.start = value;
+            console.log(value)
+            if (value === 1) value = 0
+            this.start = value
             this.commentList(this.limit, this.start)
+        },
+        //点击提交按钮
+        submitBtn() {
+            // if(!this.form.value)return this.$message.error('评论内容不能为空');
+            console.log(this.$store.state.user.userJson.token)
+            this.$axios({
+                method: 'POST',
+                url: '/comments',
+                data: {
+                    content: this.form.value,
+                    pics: [],
+                    post: this.$route.query.id
+                },
+                headers: {
+                    Authorization:
+                        `Bearer ` + this.$store.state.user.userJson.token
+                }
+            }).then(res => {
+                console.log(res)
+                const { message } = res.data
+                if (res.status == 200) {
+                    this.$message.success(message)
+                    this.commentList(this.limit, this.start)
+                    this.form.value = ''
+                }
+            })
         }
     },
     components: {
