@@ -9,10 +9,10 @@
         </el-breadcrumb>
 
         <!-- 文章详细内容 -->
-        <h2>塞班贵？一定是你的打开方式不对！6000块玩转</h2>
+        <h2>{{postInfo[0].title}}</h2>
         <div class="read">
-          <span>攻略: 2020-20-20</span>
-          <span>阅读: 154564</span>
+          <span>攻略: {{moment(postInfo[0].created_at).format('YYYY-MM-DD hh:mm')}}</span>
+          <span>阅读: {{postInfo[0].watch}}</span>
         </div>
         <div class="post-info" v-html="postInfo[0].content" v-if="postInfo.length>0"></div>
 
@@ -20,11 +20,11 @@
         <div class="commentAndShare">
           <div>
             <i class="el-icon-edit"></i>
-            <span>写评论</span>
+            <span>写评论(162)</span>
           </div>
           <div>
             <i class="el-icon-share"></i>
-            <span>分享</span>
+            <span>分享({{postInfo[0].like}})</span>
           </div>
         </div>
 
@@ -71,14 +71,32 @@
               </div>
             </div>
             <div class="content">
-                <!-- 这里放循环评论的地方 -->
-              <comlist :data="item.parent" v-if="item.parent"/>
+              <!-- 这里放循环评论的地方 -->
+              <comlist :data="item.parent" v-if="item.parent" />
               <p>{{item.content}}</p>
-              <img :src="$axios.defaults.baseURL+item2.url" v-for="(item2,index2) in item.pics" :key="index2"/>
+              <img
+                :src="$axios.defaults.baseURL+item2.url"
+                v-for="(item2,index2) in item.pics"
+                :key="index2"
+              />
             </div>
           </div>
         </div>
+
+        <!-- 分页器 -->
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="start"
+          :page-sizes="[5, 8, 12]"
+          :page-size="100"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+        ></el-pagination>
       </el-col>
+
+      <!-- 右侧内容 -->
       <el-col :span="7">
         <div class="other-post">
           <p style="color:#409eff">相关攻略</p>
@@ -117,9 +135,7 @@ export default {
         return {
             moment,
             // 文章的内容
-            postInfo: {
-                content: []
-            },
+            postInfo: [{}],
             //推荐文章的数据
             // tuijian:[],
             // 评论填写
@@ -130,12 +146,17 @@ export default {
             dialogImageUrl: '',
             dialogVisible: false,
             // 获取评论数据
-            commentLists: []
+            commentLists: [],
+            // 获取评论的条数
+            limit: 5,
+            start: 0,
+            // 评论总书
+            total: 0
         }
     },
     mounted() {
         this.getPost()
-        this.commentList()
+        this.commentList(this.limit, this.start)
     },
     methods: {
         //主要文章
@@ -145,18 +166,19 @@ export default {
             })
             const { data } = res.data
             this.postInfo = data
+            console.log(this.postInfo)
         },
         //获取文章评论
-        async commentList() {
+        async commentList(limit1, start1) {
             const commentList = await this.$axios.get('/posts/comments', {
                 params: {
                     post: this.$route.query.id,
-                    _limit: 10,
-                    _start: 0
+                    _limit: limit1,
+                    _start: start1
                 }
             })
             this.commentLists = commentList.data.data
-            console.log(this.commentLists)
+            this.total = commentList.data.total
         },
 
         // 预览图片
@@ -165,7 +187,19 @@ export default {
             this.dialogVisible = true
         },
         //移除图片
-        handleRemove() {}
+        handleRemove() {},
+        //点击切换页数
+        handleSizeChange(page) {
+            this.limit=page;
+            this.commentList(this.limit, this.start)
+        },
+        // 每页显示多少内容
+        handleCurrentChange(value) {
+            console.log(value);
+            if(value===1)value=0;
+            this.start = value;
+            this.commentList(this.limit, this.start)
+        }
     },
     components: {
         comlist
@@ -194,6 +228,11 @@ h2 {
 }
 .post-info {
     width: 100%;
+    /deep/ p {
+        img {
+            width: 100% !important;
+        }
+    }
     /deep/ p {
         span {
             img {
@@ -276,6 +315,11 @@ h2 {
         height: 80px;
         border: 1px dashed #eee;
     }
+}
+
+// -------分页器-------
+.el-pagination {
+    margin-top: 15px;
 }
 
 // --------------右侧----------------

@@ -41,9 +41,6 @@ export default {
             moment
         }
     },
-    mounted() {
-        console.log(this.data)
-    }
 }
 </script>
 
