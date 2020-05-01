@@ -62,7 +62,7 @@
                   <p>{{item.account.nickname}}</p>
                   <p>
                     <!-- <span>{{item.account.created_at}}</span> -->
-                    <span>{{moment(item.account.created_at).format('YYYY-MM-DD hh:mm')}}</span>
+                    <span>{{moment(item.created_at).format('YYYY-MM-DD hh:mm')}}</span>
                   </p>
                 </div>
               </div>
@@ -71,31 +71,38 @@
               </div>
             </div>
             <div class="content">
-              <p>{{item.content}}</p>
-              <!-- 这里放循环评论的地方 -->
-              <!-- 这里放循环评论的地方 -->
+                <!-- 这里放循环评论的地方 -->
               <comlist :data="item.parent" v-if="item.parent"/>
+              <p>{{item.content}}</p>
+              <img :src="$axios.defaults.baseURL+item2.url" v-for="(item2,index2) in item.pics" :key="index2"/>
             </div>
           </div>
-
         </div>
       </el-col>
       <el-col :span="7">
         <div class="other-post">
-            <p style="color:#409eff">相关攻略</p>
-            <div class="postlistform">
-                <div>不知道接口是哪个 暂时不写</div>
-                <div  class="fontset"><span>2020-20-40</span><span>04:25</span><span>阅读:24</span></div>
+          <p style="color:#409eff">相关攻略</p>
+          <div class="postlistform">
+            <div>不知道接口是哪个 暂时不写</div>
+            <div class="fontset">
+              <span>2020-20-40</span>
+              <span>04:25</span>
+              <span>阅读:24</span>
             </div>
-            <div class="postincluep">
-                <div class="postimg">
-                    <img src="http://157.122.54.189:9095/uploads/20f093ff243d484b9c7776f47794911f.jpg">
-                </div>
-                <div class="postcontent">
-                    <div>不知道接口是哪个</div>
-                    <div class="fontset"><span>2020-20-40</span><span>04:25</span><span>阅读:24</span></div>
-                </div>
+          </div>
+          <div class="postincluep">
+            <div class="postimg">
+              <img src="http://157.122.54.189:9095/uploads/20f093ff243d484b9c7776f47794911f.jpg" />
             </div>
+            <div class="postcontent">
+              <div>不知道接口是哪个</div>
+              <div class="fontset">
+                <span>2020-20-40</span>
+                <span>04:25</span>
+                <span>阅读:24</span>
+              </div>
+            </div>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -104,7 +111,7 @@
 
 <script>
 import comlist from '@/components/post/comlist.vue'
-import moment from "moment";
+import moment from 'moment'
 export default {
     data() {
         return {
@@ -123,12 +130,12 @@ export default {
             dialogImageUrl: '',
             dialogVisible: false,
             // 获取评论数据
-            commentLists:[],
+            commentLists: []
         }
     },
-    mounted() {  
-        this.getPost();
-        this.commentList();
+    mounted() {
+        this.getPost()
+        this.commentList()
     },
     methods: {
         //主要文章
@@ -140,16 +147,16 @@ export default {
             this.postInfo = data
         },
         //获取文章评论
-        async commentList(){
-            const commentList=await this.$axios.get('/posts/comments',{
-                params:{
-                    post:this.$route.query.id,
-                    _limit:30,
-                    _start:0,
+        async commentList() {
+            const commentList = await this.$axios.get('/posts/comments', {
+                params: {
+                    post: this.$route.query.id,
+                    _limit: 10,
+                    _start: 0
                 }
             })
-            this.commentLists=commentList.data.data;
-            console.log(this.commentLists);
+            this.commentLists = commentList.data.data
+            console.log(this.commentLists)
         },
 
         // 预览图片
@@ -238,7 +245,6 @@ h2 {
     }
 }
 .comment-list {
-    margin-top: 15px;
     font-size: 14px;
     width: 100%;
     padding: 10px 0;
@@ -265,20 +271,23 @@ h2 {
 }
 .content {
     margin-left: 60px;
+    img {
+        width: 80px;
+        height: 80px;
+        border: 1px dashed #eee;
+    }
 }
 
-
-
 // --------------右侧----------------
-.other-post{
+.other-post {
     margin-left: 10px;
     box-sizing: border-box;
-    p{
+    p {
         font-size: 20px;
         padding: 10px 0;
         border-bottom: 1px solid #eee;
     }
-    .postlistform{
+    .postlistform {
         height: 70px;
         display: flex;
         flex-direction: column;
@@ -287,29 +296,29 @@ h2 {
 
         border-bottom: 1px solid #eee;
     }
-    .postincluep{
+    .postincluep {
         display: flex;
         align-items: center;
         height: 80px;
-        img{
+        img {
             display: block;
             height: 80px;
             margin-right: 10px;
         }
-        .postcontent{
+        .postcontent {
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
     }
-    .fontset{
+    .fontset {
         font-size: 12px;
-        span{
+        span {
             margin-right: 3px;
         }
     }
-    .postincluep{
+    .postincluep {
         height: 80px;
         padding: 20px 0;
         border-bottom: 1px solid #eee;
