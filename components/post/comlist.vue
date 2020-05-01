@@ -1,38 +1,46 @@
 <template>
-  <div class="comment-container">
-      <div class="userinfo">
-          <img src="http://127.0.0.1:1337/assets/images/avatar.jpg">
-          <span>管理员</span>
+    <div class="other-user">
+      <div class="other">
+        <div class="other-left">
+          <span>耐温摩尔</span>
           <span>2020-20-20</span>
-          <span>11:12</span>
+          <span>01：01</span>
+        </div>
+        <div class="other-right">
+          <el-button type="primary" size="mini">回复</el-button>
+        </div>
       </div>
-  </div>
+      <p>我也不知道啊 我也没有去过那里</p>
+    </div>
 </template>
 
 <script>
 export default {
-
+    name: 'comlist',
+    props: {
+        data: {
+            type: Object,
+            parent: {}
+        }
+    },
+    mounted() {
+        console.log(this.data)
+    }
 }
 </script>
 
 <style scoped lang='less'>
-.comment-container{
-    width: 100%;
-    margin-top: 15px;
-    border: 1px solid #eee;
-    padding: 10px;
-    .userinfo{
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        span{
-            margin-right: 10px;
-        }
-        img{
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
+.other-user {
+    background-color: #f6f6f6;
+    padding: 5px 0 5px 5px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    p {
+        padding: 0;
     }
+}
+.other {
+    display: flex;
+    justify-content: space-between;
 }
 </style>

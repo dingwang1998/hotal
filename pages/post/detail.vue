@@ -53,50 +53,105 @@
             </div>
           </div>
 
-            <!-- 评论列表 -->
-            <div class="comment-list">
-                <comlist />
+          <!-- 评论列表 -->
+          <div class="comment-list" v-for="(item,index) in commentLists" :key="index">
+            <div class="totalinfo">
+              <div class="user">
+                <img :src="$axios.defaults.baseURL+item.account.defaultAvatar" />
+                <div class="userinfo">
+                  <p>{{item.account.nickname}}</p>
+                  <p>
+                    <!-- <span>{{item.account.created_at}}</span> -->
+                    <span>{{moment(item.account.created_at).format('YYYY-MM-DD hh:mm')}}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="reply-btn">
+                <el-button type="primary" size="mini">回复</el-button>
+              </div>
             </div>
+            <div class="content">
+              <p>{{item.content}}</p>
+              <!-- 这里放循环评论的地方 -->
+              <!-- 这里放循环评论的地方 -->
+              <comlist :data="item.parent" v-if="item.parent"/>
+            </div>
+          </div>
 
         </div>
       </el-col>
       <el-col :span="7">
-        <div class="other-post">123456</div>
+        <div class="other-post">
+            <p style="color:#409eff">相关攻略</p>
+            <div class="postlistform">
+                <div>不知道接口是哪个 暂时不写</div>
+                <div  class="fontset"><span>2020-20-40</span><span>04:25</span><span>阅读:24</span></div>
+            </div>
+            <div class="postincluep">
+                <div class="postimg">
+                    <img src="http://157.122.54.189:9095/uploads/20f093ff243d484b9c7776f47794911f.jpg">
+                </div>
+                <div class="postcontent">
+                    <div>不知道接口是哪个</div>
+                    <div class="fontset"><span>2020-20-40</span><span>04:25</span><span>阅读:24</span></div>
+                </div>
+            </div>
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import comlist from "@/components/post/comlist.vue"
+import comlist from '@/components/post/comlist.vue'
+import moment from "moment";
 export default {
     data() {
         return {
+            moment,
             // 文章的内容
             postInfo: {
                 content: []
             },
+            //推荐文章的数据
+            // tuijian:[],
             // 评论填写
             form: {
                 value: '' //评论框
             },
             //上传图片
             dialogImageUrl: '',
-            dialogVisible: false
+            dialogVisible: false,
+            // 获取评论数据
+            commentLists:[],
         }
     },
-    mounted() {
-        this.getPost()
+    mounted() {  
+        this.getPost();
+        this.commentList();
     },
     methods: {
+        //主要文章
         async getPost() {
             const res = await this.$axios.get('/posts', {
                 params: { id: this.$route.query.id }
             })
             const { data } = res.data
             this.postInfo = data
-            console.log(this.postInfo)
         },
+        //获取文章评论
+        async commentList(){
+            const commentList=await this.$axios.get('/posts/comments',{
+                params:{
+                    post:this.$route.query.id,
+                    _limit:30,
+                    _start:0,
+                }
+            })
+            this.commentLists=commentList.data.data;
+            console.log(this.commentLists);
+        },
+
         // 预览图片
         handlePictureCardPreview() {
             this.dialogImageUrl = file.url
@@ -105,7 +160,7 @@ export default {
         //移除图片
         handleRemove() {}
     },
-    components:{
+    components: {
         comlist
     }
 }
@@ -133,13 +188,12 @@ h2 {
 .post-info {
     width: 100%;
     /deep/ p {
-        img {
-            width: 100% !important;
+        span {
+            img {
+                width: 100% !important;
+            }
         }
     }
-}
-.other-post {
-    background-color: pink;
 }
 .commentAndShare {
     display: flex;
@@ -159,7 +213,7 @@ h2 {
 }
 .comment-wrapll {
     p {
-        padding: 15px 0;
+        padding: 10px 0;
     }
     .textarea {
         margin-bottom: 15px;
@@ -168,19 +222,97 @@ h2 {
         display: flex;
         justify-content: space-between;
 
-        /deep/ .el-upload--picture-card{
+        /deep/ .el-upload--picture-card {
             width: 100px;
             height: 100px;
             line-height: 100px !important;
         }
-        /deep/ .el-upload-list__item is-success{
+        /deep/ .el-upload-list__item is-success {
             width: 100px;
             height: 100px;
         }
-        /deep/ .el-upload-list--picture-card .el-upload-list__item{
+        /deep/ .el-upload-list--picture-card .el-upload-list__item {
             width: 100px;
             height: 100px;
         }
+    }
+}
+.comment-list {
+    margin-top: 15px;
+    font-size: 14px;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+    .user {
+        display: flex;
+        align-items: center;
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        p {
+            padding: 0;
+        }
+    }
+}
+.totalinfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.content {
+    margin-left: 60px;
+}
+
+
+
+// --------------右侧----------------
+.other-post{
+    margin-left: 10px;
+    box-sizing: border-box;
+    p{
+        font-size: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .postlistform{
+        height: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px 0;
+
+        border-bottom: 1px solid #eee;
+    }
+    .postincluep{
+        display: flex;
+        align-items: center;
+        height: 80px;
+        img{
+            display: block;
+            height: 80px;
+            margin-right: 10px;
+        }
+        .postcontent{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    }
+    .fontset{
+        font-size: 12px;
+        span{
+            margin-right: 3px;
+        }
+    }
+    .postincluep{
+        height: 80px;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
     }
 }
 </style>
