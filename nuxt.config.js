@@ -14,7 +14,6 @@ export default {
     link: [
       // { rel: 'icon', type: 'image/x-icon', href: '/mengyouwang.ico' },
       { rel: 'icon', type: 'image/x-icon', href: 'http://demo.sc.chinaz.com/Files/pic/icons/7662/Bii3.png' },
-
     ]
   },
   /*
@@ -55,8 +54,8 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    // baseURL: "http://127.0.0.1:1337" //新增axios默认请求路径
-    baseURL: "http://157.122.54.189:9095" // 备用地址
+    baseURL: "http://127.0.0.1:1337" //新增axios默认请求路径
+    // baseURL: "http://157.122.54.189:9095" // 备用地址
   },
   /*
   ** Build configuration

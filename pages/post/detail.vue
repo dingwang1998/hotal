@@ -31,14 +31,14 @@
         <!-- 评论区域 -->
         <div class="comment-wrapll">
           <p>评论</p>
+          <el-tag type="success" style="margin-bottom:5px">回复@</el-tag>
           <el-input type="textarea" v-model="form.value" class="textarea" placeholder="说点什么..."></el-input>
           <!-- 上传图片 -->
           <div class="upload">
             <div class="upload-left">
               <el-upload
                 :action="$axios.defaults.baseURL+`/upload`"
-                :headers="{
-                Authorization: `Bearer ` + $store.state.user.userJson.token}"
+                :headers="{Authorization: 'Bearer ' + $store.state.user.userJson.token}"
                 list-type="picture-card"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
@@ -69,7 +69,7 @@
                 </div>
               </div>
               <div class="reply-btn">
-                <el-button type="primary" size="mini">回复</el-button>
+                <el-button type="primary" size="mini" @click="replySomeone(item)">回复</el-button>
               </div>
             </div>
             <div class="content">
@@ -153,7 +153,7 @@ export default {
             limit: 5,
             start: 0,
             // 评论总书
-            total: 0
+            total: 0,
         }
     },
     mounted() {
@@ -184,7 +184,7 @@ export default {
         },
 
         // 预览图片
-        handlePictureCardPreview() {
+        handlePictureCardPreview(file) {
             this.dialogImageUrl = file.url
             this.dialogVisible = true
         },
@@ -204,8 +204,7 @@ export default {
         },
         //点击提交按钮
         submitBtn() {
-            // if(!this.form.value)return this.$message.error('评论内容不能为空');
-            console.log(this.$store.state.user.userJson.token)
+            if(!this.form.value)return this.$message.error('评论内容不能为空');
             this.$axios({
                 method: 'POST',
                 url: '/comments',
@@ -227,6 +226,10 @@ export default {
                     this.form.value = ''
                 }
             })
+        },
+        //回复某人
+        replySomeone(item){
+            console.log(item);
         }
     },
     components: {
