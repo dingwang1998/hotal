@@ -50,7 +50,12 @@
           <el-button @click="chooseChild">确定</el-button>
         </div>
       </el-popover>
-      <el-input placeholder="人数未定" suffix-icon="el-icon-user" @focus="isShowTab" :value="options.value"></el-input>
+      <el-input
+        placeholder="人数未定"
+        suffix-icon="el-icon-user"
+        @focus="isShowTab"
+        :value="options.value"
+      ></el-input>
 
       <!-- 查看价格 -->
       <el-button
@@ -272,20 +277,44 @@ export default {
             visible: false,
             // 选择人数
             options: {
-                value:'',
-                child:'',
-                adult:''
-            }
+                value: '',
+                child: '',
+                adult: ''
+            },
+            // 当前位置信息
+            localInfo: {}
         }
     },
     mounted() {
+        var map = new AMap.Map('container')
         // Amap在模板中导入js文件之后就应经是一个全局变量了
         // map是一个地图的对象
         var map = new AMap.Map('container', {
             zoom: 11, //级别
-            center: [113.3245904, 23.1066805] //中心点坐标
+            resizeEnable: true //自动定位到当前位置
         })
         this.map = map
+
+        // 创建默认图标的点标记
+        var marker = new AMap.Marker({
+            position: new AMap.LngLat(113.3, 22.8), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            title: '北京'
+        })
+        map.add(marker)
+
+        AMap.plugin('AMap.CitySearch', () => {
+            var citySearch = new AMap.CitySearch()
+            citySearch.getLocalCity((status, result) => {
+                if (status === 'complete' && result.info === 'OK') {
+                    // 查询成功，result即为当前所在城市信息
+                    // console.log(result.city)
+                    this.$alert(`${result.city}`, '当前定位', {
+                        confirmButtonText: '确定',
+                        callback: action => {}
+                    })
+                }
+            })
+        })
     },
     methods: {
         // 封装请求城市酒店
@@ -369,9 +398,9 @@ export default {
             this.visible = true
         },
         //点击确认人数
-        chooseChild(){
-            this.options.value=`${this.options.adult}${this.options.child}`
-            this.visible=false;
+        chooseChild() {
+            this.options.value = `${this.options.adult}${this.options.child}`
+            this.visible = false
         }
     }
 }
