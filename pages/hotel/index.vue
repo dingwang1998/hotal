@@ -30,30 +30,35 @@
       ></el-date-picker>
 
       <!-- 选人数 -->
-      <el-select v-model="form.region" placeholder="请选择活动区域">
-        <div class="childnum">
+      <el-popover placement="bottom" width="265" trigger="manual" v-model="visible" class="tiolist">
+        <div class="tabone">
           <span>每间</span>
-          <div class="adult">
-            <el-option label="区域一" value="shanghai">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="区域一" value="shanghai"></el-option>
-              </el-select>
-            </el-option>
-            <el-option label="区域一" value="shanghai">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
-              </el-select>
-            </el-option>
+          <div>
+            <el-select v-model="options.adult" placeholder="成人" :value="options.adult">
+              <el-option label="1成人" value="1成人"></el-option>
+              <el-option label="2成人" value="2成人"></el-option>
+              <el-option label="3成人" value="3成人"></el-option>
+            </el-select>
+            <el-select v-model="options.child" placeholder="儿童" :value="options.child">
+              <el-option label="1儿童" value="1儿童"></el-option>
+              <el-option label="2儿童" value="2儿童"></el-option>
+              <el-option label="3儿童" value="3儿童"></el-option>
+            </el-select>
           </div>
         </div>
-        <el-option value="beijing">
-          <el-button type="primary" size="mini">确定</el-button>
-        </el-option>
-      </el-select>
+        <div class="tabtwo">
+          <el-button @click="chooseChild">确定</el-button>
+        </div>
+      </el-popover>
+      <el-input placeholder="人数未定" suffix-icon="el-icon-user" @focus="isShowTab" :value="options.value"></el-input>
 
       <!-- 查看价格 -->
-      <el-button type="primary" style="margin-left:15px" @click="checkPrice">查看价格</el-button>
+      <el-button
+        type="primary"
+        style="margin-left:15px"
+        @click="checkPrice"
+        v-loading.fullscreen.lock="fullscreenLoading"
+      >查看价格</el-button>
     </el-form>
 
     <!-- 高德地图展示 -->
@@ -64,14 +69,12 @@
       ></script>
       <div class="hotelinfo">
         <div class="infoup">
-          <div class="area">
-            区域:
-          </div>
+          <div class="area">区域:</div>
           <div>
             <div class="areatown">
               <span v-for="(item,index) in cityinfolist[0].scenics" :key="index">{{item.name}}</span>
             </div>
-            <div class="showAll" >
+            <div class="showAll">
               <i class="el-icon-download" style="font-size:12px" @click="showAllcityInfo">显示全部城市信息</i>
             </div>
           </div>
@@ -180,60 +183,58 @@
     </div>
 
     <!--酒店展示 -->
-    <div class="hotelslist" v-for="(item,index) in backHotelInfo" :key="index">
-      <div class="hotelimg">
-        <img
-          :src="item.photos"
-        />
-      </div>
-      <div class="hotelpreinfo">
-        <h3>{{item.name}}</h3>
-        <p>{{item.alias}}</p>
-        <div class="hotelstar">
-          <el-rate
-            v-model="pointer"
-            disabled
-            show-score
-            text-color="#ff9900"
-            score-template="{value}"
-          ></el-rate>
-          <span>
-            <span class="pricecolor">6</span>条评价
-          </span>
-          <span>
-            <span class="pricecolor">98</span>篇游记
-          </span>
+    <div class="hotelshowlist">
+      <div class="hotelslist" v-for="(item,index) in backHotelInfo" :key="index">
+        <div class="hotelimg">
+          <img :src="item.photos" />
         </div>
-        <p>
-          <i class="el-icon-map-location"></i>
-          <span>位于:{{item.address}}</span>
-        </p>
-      </div>
-      <div class="pricelist">
-        <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
-          <div>{{item2.name}}</div>
-          <div>
-            <span class="pricecolor">
-              ${{item.price}}
-              <span>起</span>
+        <div class="hotelpreinfo">
+          <h3>{{item.name}}</h3>
+          <p>{{item.alias}}</p>
+          <div class="hotelstar">
+            <el-rate
+              v-model="pointer"
+              disabled
+              show-score
+              text-color="#ff9900"
+              score-template="{value}"
+            ></el-rate>
+            <span>
+              <span class="pricecolor">6</span>条评价
             </span>
-            <i class="el-icon-arrow-right"></i>
+            <span>
+              <span class="pricecolor">98</span>篇游记
+            </span>
+          </div>
+          <p>
+            <i class="el-icon-map-location"></i>
+            <span>位于:{{item.address}}</span>
+          </p>
+        </div>
+        <div class="pricelist">
+          <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
+            <div>{{item2.name}}</div>
+            <div>
+              <span class="pricecolor">
+                ${{item.price}}
+                <span>起</span>
+              </span>
+              <i class="el-icon-arrow-right"></i>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
     <!-- 分页功能 -->
     <div class="fenye">
-     <el-pagination
-      background
-      @current-change="handleCurrentChange"
-      :current-page="start"
-      
-      :page-size="100"
-      layout=" prev, pager, next, jumper"
-      :total="1000">
-    </el-pagination>
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page="start"
+        :page-size="100"
+        layout=" prev, pager, next, jumper"
+        :total="1000"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -262,9 +263,19 @@ export default {
             // 查找的城市信息
             cityinfolist: [{}],
             // 返回城市酒店信息
-            backHotelInfo:[],
+            backHotelInfo: [],
             // 下一页显示多少条数据
-            start:0
+            start: 0,
+            // 加载显示
+            fullscreenLoading: false,
+            // 显示选择人数的框
+            visible: false,
+            // 选择人数
+            options: {
+                value:'',
+                child:'',
+                adult:''
+            }
         }
     },
     mounted() {
@@ -278,10 +289,12 @@ export default {
     },
     methods: {
         // 封装请求城市酒店
-        async getHotel(cityId,start){
-            const res=await this.$axios.get('/hotels',{params:{city:cityId,_start:start}});
-            this.backHotelInfo=res.data.data;
-            console.log(this.backHotelInfo);
+        async getHotel(cityId, start) {
+            const res = await this.$axios.get('/hotels', {
+                params: { city: cityId, _start: start }
+            })
+            this.backHotelInfo = res.data.data
+            console.log(this.backHotelInfo)
         },
         //相当于change事件，一旦输入框的值变化就变化
         querySearch(value, cb) {
@@ -314,46 +327,68 @@ export default {
         async handleSelect(cityname) {
             const res = await this.$axios.get(`/cities`, {
                 params: {
-                    name: cityname.name,
+                    name: cityname.name
                 }
-            });
-            this.cityinfolist = res.data.data;
-            console.log(this.cityinfolist[0]);
-            this.getHotel(this.cityinfolist[0].id);
+            })
+            this.cityinfolist = res.data.data
+            console.log(this.cityinfolist[0])
+            this.getHotel(this.cityinfolist[0].id)
         },
         //点击展示全部城市信息
         showAllcityInfo() {
-            if (!this.form.mainCity){
-                return;
-            }  
-            if(!document.querySelector('.areatown').getAttribute('style')){
+            if (!this.form.mainCity) {
+                return
+            }
+            if (!document.querySelector('.areatown').getAttribute('style')) {
                 document.querySelector('.areatown').style.height = 60 + `px`
             }
-            if(document.querySelector('.areatown').getAttribute('style') =='height: 155px;'){
+            if (
+                document.querySelector('.areatown').getAttribute('style') ==
+                'height: 155px;'
+            ) {
                 document.querySelector('.areatown').style.height = 60 + `px`
-            }else{
-                document.querySelector('.areatown').style.height = 155 + `px`;
+            } else {
+                document.querySelector('.areatown').style.height = 155 + `px`
             }
         },
         // 点击切换页数
-        handleCurrentChange(value){
-            console.log(value);
-            this.getHotel(this.cityinfolist[0].id,(value-1)*5)
+        handleCurrentChange(value) {
+            console.log(value)
+            this.getHotel(this.cityinfolist[0].id, (value - 1) * 5)
         },
         //点击查询价格
-        checkPrice(){
+        checkPrice() {
+            this.fullscreenLoading = true
             this.getHotel(this.cityinfolist[0].id)
+            setTimeout(() => {
+                this.fullscreenLoading = false
+            }, 2000)
+        },
+        //展示选人数框
+        isShowTab() {
+            this.visible = true
+        },
+        //点击确认人数
+        chooseChild(){
+            this.options.value=`${this.options.adult}${this.options.child}`
+            this.visible=false;
         }
     }
 }
 </script>
 
 <style scoped lang="less">
+body {
+    margin: 0;
+}
 .container {
     height: 100%;
     width: 1000px;
     margin: 0 auto;
     padding: 20px 0;
+    .el-table {
+        height: 100%;
+    }
 }
 .el-breadcrumb {
     margin-bottom: 15px;
@@ -395,9 +430,9 @@ export default {
             height: 60px;
             transition: all 0.3s;
             overflow: hidden;
-            span{
+            span {
                 display: inline-block;
-                padding:5px;
+                padding: 5px;
                 border-radius: 5px;
             }
             span:hover {
@@ -409,11 +444,11 @@ export default {
     }
     .infodown {
         margin-top: 10px;
-        .queen{
+        .queen {
             margin-top: 5px;
             display: flex;
             flex-direction: column;
-            span{
+            span {
                 margin: 5px 0;
             }
         }
@@ -428,7 +463,7 @@ export default {
         text-decoration: underline;
     }
 }
-.aveprice{
+.aveprice {
     padding-bottom: 5px;
     border-bottom: 1px solid #eee;
 }
@@ -500,7 +535,7 @@ export default {
         }
     }
     .hotelpreinfo {
-        h3{
+        h3 {
             font-size: 25px;
             font-weight: normal;
         }
@@ -541,40 +576,35 @@ export default {
     color: #ff6700;
     margin-right: 5px;
 }
-//筛选人数
-.childnum {
-    width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-
-    .adult {
-        display: flex;
-        .el-select-dropdown__item {
-            padding: 0;
-        }
-        /deep/.el-input--suffix {
-            width: 90px;
-            margin-left: 15px;
-            .el-input__inner {
-                height: 30px;
-                line-height: 30px;
-            }
-        }
-    }
+//选人数
+.el-input {
+    width: 22%;
 }
-.selected {
+.el-form {
+    position: relative;
+}
+.tiolist {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    box-sizing: border-box;
-    height: 50px;
-    line-height: 50px;
-    background-color: #fff;
-    border-top: 1px solid #eee;
-    .el-button--mini {
-        height: 30px;
+    flex-direction: column;
+    width: 265px;
+    position: absolute;
+    left: 570px;
+    top: 45px;
+
+    /deep/ .el-input__inner {
+        width: 100px;
+    }
+    .tabone {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .tabtwo {
+        padding-top: 10px;
+        display: flex;
+        justify-content: flex-end;
     }
 }
 </style>
