@@ -53,7 +53,7 @@
       </el-select>
 
       <!-- 查看价格 -->
-      <el-button type="primary" style="margin-left:15px">查看价格</el-button>
+      <el-button type="primary" style="margin-left:15px" @click="checkPrice">查看价格</el-button>
     </el-form>
 
     <!-- 高德地图展示 -->
@@ -64,22 +64,15 @@
       ></script>
       <div class="hotelinfo">
         <div class="infoup">
-          <div class="area">区域:</div>
-          <div class="areatown">
-            <span>人民广场</span>
-            <span>成桥镇</span>
-            <span>奉贤区</span>
-            <span>建设镇</span>
-            <span>三星镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <span>新河镇</span>
-            <div class="showAll">
-              <i class="el-icon-download" style="font-size:12px">显示全部城市信息</i>
+          <div class="area">
+            区域:
+          </div>
+          <div>
+            <div class="areatown">
+              <span v-for="(item,index) in cityinfolist[0].scenics" :key="index">{{item.name}}</span>
+            </div>
+            <div class="showAll" >
+              <i class="el-icon-download" style="font-size:12px" @click="showAllcityInfo">显示全部城市信息</i>
             </div>
           </div>
         </div>
@@ -187,15 +180,15 @@
     </div>
 
     <!--酒店展示 -->
-    <div class="hotelslist">
+    <div class="hotelslist" v-for="(item,index) in backHotelInfo" :key="index">
       <div class="hotelimg">
         <img
-          src="https://p1.meituan.net/hotel/c48d045b9f5bf221c479f55c622c8782154904.jpg%40700w_700h_0e_1l%7Cwatermark%3D1%26%26r%3D1%26p%3D9%26x%3D2%26y%3D2%26relative%3D1%26o%3D20"
+          :src="item.photos"
         />
       </div>
       <div class="hotelpreinfo">
-        <h3>锦江之星</h3>
-        <p>jin jiang zhi xing (shang hai min hang wu jing dian</p>
+        <h3>{{item.name}}</h3>
+        <p>{{item.alias}}</p>
         <div class="hotelstar">
           <el-rate
             v-model="pointer"
@@ -213,35 +206,15 @@
         </div>
         <p>
           <i class="el-icon-map-location"></i>
-          <span>位于:剑川路165号(近龙吴路)</span>
+          <span>位于:{{item.address}}</span>
         </p>
       </div>
       <div class="pricelist">
-        <div class="travelname">
-          <div>携程</div>
+        <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
+          <div>{{item2.name}}</div>
           <div>
             <span class="pricecolor">
-              $232
-              <span>起</span>
-            </span>
-            <i class="el-icon-arrow-right"></i>
-          </div>
-        </div>
-        <div class="travelname">
-          <div>携程</div>
-          <div>
-            <span class="pricecolor">
-              $232
-              <span>起</span>
-            </span>
-            <i class="el-icon-arrow-right"></i>
-          </div>
-        </div>
-        <div class="travelname">
-          <div>携程</div>
-          <div>
-            <span class="pricecolor">
-              $232
+              ${{item.price}}
               <span>起</span>
             </span>
             <i class="el-icon-arrow-right"></i>
@@ -252,7 +225,15 @@
 
     <!-- 分页功能 -->
     <div class="fenye">
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+     <el-pagination
+      background
+      @current-change="handleCurrentChange"
+      :current-page="start"
+      
+      :page-size="100"
+      layout=" prev, pager, next, jumper"
+      :total="1000">
+    </el-pagination>
     </div>
   </div>
 </template>
@@ -275,9 +256,15 @@ export default {
             // 酒店价格调整
             hotelprice: 4000,
             //酒店价格显示
-            showPrice: 0,
+            showPrice: 4000,
             // 酒店评分
-            pointer: 3.7
+            pointer: 3.7,
+            // 查找的城市信息
+            cityinfolist: [{}],
+            // 返回城市酒店信息
+            backHotelInfo:[],
+            // 下一页显示多少条数据
+            start:0
         }
     },
     mounted() {
@@ -287,9 +274,15 @@ export default {
             zoom: 11, //级别
             center: [113.3245904, 23.1066805] //中心点坐标
         })
-        this.map = map;
+        this.map = map
     },
     methods: {
+        // 封装请求城市酒店
+        async getHotel(cityId,start){
+            const res=await this.$axios.get('/hotels',{params:{city:cityId,_start:start}});
+            this.backHotelInfo=res.data.data;
+            console.log(this.backHotelInfo);
+        },
         //相当于change事件，一旦输入框的值变化就变化
         querySearch(value, cb) {
             if (!value) {
@@ -319,16 +312,45 @@ export default {
         },
         // 下拉选择时候触发的事件
         async handleSelect(cityname) {
-           const res=await this.$axios.get()
+            const res = await this.$axios.get(`/cities`, {
+                params: {
+                    name: cityname.name,
+                }
+            });
+            this.cityinfolist = res.data.data;
+            console.log(this.cityinfolist[0]);
+            this.getHotel(this.cityinfolist[0].id);
+        },
+        //点击展示全部城市信息
+        showAllcityInfo() {
+            if (!this.form.mainCity){
+                return;
+            }  
+            if(!document.querySelector('.areatown').getAttribute('style')){
+                document.querySelector('.areatown').style.height = 60 + `px`
+            }
+            if(document.querySelector('.areatown').getAttribute('style') =='height: 155px;'){
+                document.querySelector('.areatown').style.height = 60 + `px`
+            }else{
+                document.querySelector('.areatown').style.height = 155 + `px`;
+            }
+        },
+        // 点击切换页数
+        handleCurrentChange(value){
+            console.log(value);
+            this.getHotel(this.cityinfolist[0].id,(value-1)*5)
+        },
+        //点击查询价格
+        checkPrice(){
+            this.getHotel(this.cityinfolist[0].id)
         }
     }
 }
 </script>
 
 <style scoped lang="less">
-// css原生写法 引入字体图标
-@import url('//at.alicdn.com/t/font_1794855_xmtpqbfl5jh.css');
 .container {
+    height: 100%;
     width: 1000px;
     margin: 0 auto;
     padding: 20px 0;
@@ -355,42 +377,60 @@ export default {
         }
     }
 }
+//地图外大盒子
 .map {
+    height: 343px;
     margin-top: 15px;
     display: flex;
 }
 .hotelinfo {
-    display: flex;
-    flex-direction: column;
+    width: 50%;
     .infoup {
-        display: flex;
         .area {
-            width: 70px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
         }
         .areatown {
-            span {
-                padding: 0px 6px;
+            height: 60px;
+            transition: all 0.3s;
+            overflow: hidden;
+            span{
+                display: inline-block;
+                padding:5px;
+                border-radius: 5px;
             }
             span:hover {
                 background: #ff6700;
                 color: #fff;
                 cursor: pointer;
             }
-            .showAll {
-                i {
-                    color: #ff6700;
-                }
-                i:hover {
-                    cursor: pointer;
-                    text-decoration: underline;
-                }
+        }
+    }
+    .infodown {
+        margin-top: 10px;
+        .queen{
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            span{
+                margin: 5px 0;
             }
         }
     }
 }
-.infodown {
-    display: flex;
-    margin-top: 15px;
+.showAll {
+    i {
+        color: #ff6700;
+    }
+    i:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+.aveprice{
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
 }
 .aveprice .el-tooltip {
     padding: 0;
@@ -403,8 +443,8 @@ export default {
     background-color: #eee;
 }
 #container {
-    width: 500px;
-    height: 320px;
+    width: 50%;
+    height: 100%;
     margin-left: 15px;
 }
 // 条件筛选
@@ -416,7 +456,7 @@ export default {
     justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
-    border: 1px solid #999;
+    border: 1px solid #eee;
     border-radius: 5px;
     .price {
         width: 25%;
@@ -431,7 +471,7 @@ export default {
     .equipment,
     .brand {
         width: 15%;
-        border-left: 1px solid #666;
+        border-left: 1px solid #eee;
         padding-left: 10px;
         display: flex;
         flex-direction: column;
@@ -446,9 +486,10 @@ export default {
 //酒店区域
 .hotelslist {
     display: flex;
+    justify-content: space-between;
     height: 220px;
     padding: 20px 0;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #eee;
     .hotelimg {
         height: 100%;
         width: 320px;
@@ -459,7 +500,11 @@ export default {
         }
     }
     .hotelpreinfo {
-        margin: 0 50px;
+        h3{
+            font-size: 25px;
+            font-weight: normal;
+        }
+        width: 350px;
         p {
             color: gray;
         }
@@ -470,8 +515,8 @@ export default {
         }
     }
     .pricelist {
-        font-size: 14px;
-        width: 200px;
+        font-size: 16px;
+        width: 260px;
         .travelname {
             display: flex;
             justify-content: space-between;
@@ -483,7 +528,7 @@ export default {
 }
 //分页功能
 .fenye {
-    width: 100%;
+    width: 80%;
     display: flex;
     justify-content: flex-end;
     padding: 20px 0;
