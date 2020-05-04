@@ -14,6 +14,7 @@ export default {
     link: [
       // { rel: 'icon', type: 'image/x-icon', href: '/mengyouwang.ico' },
       { rel: 'icon', type: 'image/x-icon', href: 'http://demo.sc.chinaz.com/Files/pic/icons/7662/Bii3.png' },
+      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1794855_pvig4g6rear.css' },
     ]
   },
   /*

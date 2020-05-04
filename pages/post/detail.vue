@@ -114,8 +114,13 @@
       <el-col :span="7">
         <div class="other-post">
           <p style="color:#409eff">相关攻略</p>
-          <div class="postlistform">
-            <div>不知道接口是哪个 暂时不写</div>
+          <div
+            class="postlistform"
+            v-for="(item,index) in tuijian"
+            :key="index"
+            @click="toPostDetail(item)"
+          >
+            <div v-html="item.content"></div>
             <div class="fontset">
               <span>2020-20-40</span>
               <span>04:25</span>
@@ -127,7 +132,7 @@
               <img src="http://157.122.54.189:9095/uploads/20f093ff243d484b9c7776f47794911f.jpg" />
             </div>
             <div class="postcontent">
-              <div>不知道接口是哪个</div>
+              <div>非常棒</div>
               <div class="fontset">
                 <span>2020-20-40</span>
                 <span>04:25</span>
@@ -151,7 +156,7 @@ export default {
             // 文章的内容
             postInfo: [{}],
             //推荐文章的数据
-            // tuijian:[],
+            tuijian: [],
             // 评论填写
             form: {
                 value: '' //评论框
@@ -173,12 +178,22 @@ export default {
                 id: ''
             },
             // 照片墙图片的列表
-            fileList: [],
+            fileList: []
         }
     },
     mounted() {
         this.getPost()
         this.commentList(this.limit, this.start)
+        this.$axios({
+            url: '/posts/recommend',
+            params: {
+                id: this.$route.query
+            }
+        }).then(res => {
+            const { data } = res.data
+            this.tuijian = data
+            console.log(data)
+        })
     },
     methods: {
         //主要文章
@@ -200,9 +215,7 @@ export default {
             })
             this.commentLists = commentList.data.data
             this.total = commentList.data.total
-            console.log(this.commentLists);
-            
-            
+            console.log(this.commentLists)
         },
         // 预览图片
         handlePictureCardPreview(file) {
@@ -233,8 +246,8 @@ export default {
                     data: {
                         content: this.form.value,
                         follow: this.reply.id,
-                        post: this.$route.query.id, 
-                        pics:this.fileList,
+                        post: this.$route.query.id,
+                        pics: this.fileList
                     },
                     headers: {
                         Authorization:
@@ -253,9 +266,9 @@ export default {
                     url: '/comments',
                     data: {
                         content: this.form.value,
-                        pics:this.fileList,
+                        pics: this.fileList,
                         post: this.$route.query.id,
-                        follow: this.reply.id,
+                        follow: this.reply.id
                     },
                     headers: {
                         Authorization:
@@ -264,10 +277,10 @@ export default {
                 }).then(res => {
                     this.reply.isShow = false
                     const { message } = res.data
-                        this.form.value = ''
-                        this.$message.success(message)
-                        this.commentList(this.limit, this.start)
-                        this.$refs.clear.clearFiles()
+                    this.form.value = ''
+                    this.$message.success(message)
+                    this.commentList(this.limit, this.start)
+                    this.$refs.clear.clearFiles()
                 })
             }
         },
@@ -277,17 +290,39 @@ export default {
             this.reply.isShow = true
             this.reply.showReplyObject = item.account.nickname
             this.$refs.repyInput.focus()
-        }, 
+        },
         //写评论
         autoFocus() {
             this.$refs.repyInput.focus()
         },
         //成功上传图片之后
-        handleImageSuccess(response, file, fileList){
+        handleImageSuccess(response, file, fileList) {
             // console.log(fileList[0]);
-            console.log(fileList[0].response[0]);
-            this.fileList[0]=fileList[0].response[0];
+            console.log(fileList[0].response[0])
+            this.fileList[0] = fileList[0].response[0]
             // console.log(this.fileList[0]);
+        },
+        //点击跳转页面
+        toPostDetail(item) {
+            this.$router.push({
+                url: '/posts',
+                query: {
+                    id: item.id
+                }
+            })
+        }
+    },
+    // 监听路由的变化
+    watch: {
+        $route(item) {
+            console.log(item)
+            this.$axios({
+                url: '/posts',
+                params: { id: item.query.id }
+            }).then(res => {
+                const { data } = res.data
+                this.postInfo = data
+            })
         }
     },
     components: {
@@ -322,6 +357,11 @@ h2 {
             img {
                 width: 100% !important;
             }
+        }
+    }
+    /deep/ p {
+        img {
+            width: 100% !important;
         }
     }
 }
@@ -371,7 +411,7 @@ h2 {
     margin-top: 15px;
     font-size: 14px;
     width: 100%;
-    padding: 10px  0;
+    padding: 10px 0;
     border-bottom: 1px solid #eee;
     box-sizing: border-box;
     .user {
@@ -400,6 +440,10 @@ h2 {
     padding: 5px;
     border: 1px solid gray;
     border-radius: 5px;
+    p {
+        word-break: break-all;
+        white-space: pre-wrap;
+    }
     img {
         width: 80px;
         height: 80px;

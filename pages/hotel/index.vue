@@ -1,249 +1,251 @@
 <template>
-  <div class="container">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>酒店</el-breadcrumb-item>
-      <el-breadcrumb-item>{{this.cityinfolist[0].name}}酒店预订</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="container">
+      <!-- 面包屑 -->
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>酒店</el-breadcrumb-item>
+        <el-breadcrumb-item>{{this.cityinfolist[0].name}}酒店预订</el-breadcrumb-item>
+      </el-breadcrumb>
 
-    <!-- 预定部分 -->
-    <el-form :model="form">
-      <!-- 城市日期人数搜索 -->
-      <el-autocomplete
-        class="inline-input"
-        suffix-icon="el-icon-search"
-        v-model="form.mainCity"
-        :fetch-suggestions="querySearch"
-        placeholder="切换城市"
-        :trigger-on-focus="false"
-        @select="handleSelect"
-        @blur="defaultSelected"
-      ></el-autocomplete>
+      <!-- 预定部分 -->
+      <el-form :model="form">
+        <!-- 城市日期人数搜索 -->
+        <el-autocomplete
+          class="inline-input"
+          suffix-icon="el-icon-search"
+          v-model="form.mainCity"
+          :fetch-suggestions="querySearch"
+          placeholder="切换城市"
+          :trigger-on-focus="false"
+          @select="handleSelect"
+          @blur="defaultSelected"
+        ></el-autocomplete>
 
-      <!-- 时间选择 -->
-      <el-date-picker
-        v-model="form.time"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="入住日期"
-        end-placeholder="退房日期"
-      ></el-date-picker>
+        <!-- 时间选择 -->
+        <el-date-picker
+          v-model="form.time"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="入住日期"
+          end-placeholder="退房日期"
+        ></el-date-picker>
 
-      <!-- 选人数 -->
-      <el-popover placement="bottom" width="265" trigger="manual" v-model="visible" class="tiolist">
-        <div class="tabone">
-          <span>每间</span>
-          <div>
-            <el-select v-model="options.adult" placeholder="成人" :value="options.adult">
-              <el-option label="1成人" value="1成人"></el-option>
-              <el-option label="2成人" value="2成人"></el-option>
-              <el-option label="3成人" value="3成人"></el-option>
-            </el-select>
-            <el-select v-model="options.child" placeholder="儿童" :value="options.child">
-              <el-option label="1儿童" value="1儿童"></el-option>
-              <el-option label="2儿童" value="2儿童"></el-option>
-              <el-option label="3儿童" value="3儿童"></el-option>
-            </el-select>
-          </div>
-        </div>
-        <div class="tabtwo">
-          <el-button @click="chooseChild">确定</el-button>
-        </div>
-      </el-popover>
-      <el-input
-        placeholder="人数未定"
-        suffix-icon="el-icon-user"
-        @focus="isShowTab"
-        :value="options.value"
-      ></el-input>
-
-      <!-- 查看价格 -->
-      <el-button
-        type="primary"
-        style="margin-left:15px"
-        @click="checkPrice"
-        v-loading.fullscreen.lock="fullscreenLoading"
-      >查看价格</el-button>
-    </el-form>
-
-    <!-- 高德地图展示 -->
-    <div class="map">
-      <script
-        type="text/javascript"
-        src="https://webapi.amap.com/maps?v=1.4.15&key=	fba3fa19294ea55fb391428ba742810d"
-      ></script>
-      <div class="hotelinfo">
-        <div class="infoup">
-          <div class="area">区域:</div>
-          <div>
-            <div class="areatown">
-              <span v-for="(item,index) in cityinfolist[0].scenics" :key="index">{{item.name}}</span>
-            </div>
-            <div class="showAll">
-              <i class="el-icon-download" style="font-size:12px" @click="showAllcityInfo">显示全部城市信息</i>
+        <!-- 选人数 -->
+        <el-popover
+          placement="bottom"
+          width="265"
+          trigger="manual"
+          v-model="visible"
+          class="tiolist"
+        >
+          <div class="tabone">
+            <span>每间</span>
+            <div>
+              <el-select v-model="options.adult" placeholder="成人" :value="options.adult">
+                <el-option label="1成人" value="1成人"></el-option>
+                <el-option label="2成人" value="2成人"></el-option>
+                <el-option label="3成人" value="3成人"></el-option>
+              </el-select>
+              <el-select v-model="options.child" placeholder="儿童" :value="options.child">
+                <el-option label="1儿童" value="1儿童"></el-option>
+                <el-option label="2儿童" value="2儿童"></el-option>
+                <el-option label="3儿童" value="3儿童"></el-option>
+              </el-select>
             </div>
           </div>
-        </div>
-        <div class="infodown">
-          <div class="aveprice">
-            均价
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="等级均价由平日价格计算得出,节假日价格会有上浮"
-              placement="top-start"
-            >
-              <el-button>?</el-button>
-            </el-tooltip>:
+          <div class="tabtwo">
+            <el-button @click="chooseChild">确定</el-button>
           </div>
-          <div class="queen">
-            <span>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <span>￥333</span>
-            </span>
-            <span>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <span>￥521</span>
-            </span>
-            <span>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <strong>👑</strong>
-              <span>￥768</span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div id="container"></div>
-    </div>
+        </el-popover>
+        <el-input
+          placeholder="人数未定"
+          suffix-icon="el-icon-user"
+          @focus="isShowTab"
+          :value="options.value"
+        ></el-input>
 
-    <!-- 条件筛选 -->
-    <div class="condition">
-      <div class="price">
-        <p>
-          <span>价格</span>
-          <span>{{showPrice}}</span>
-        </p>
-        <el-slider v-model="showPrice" :max="4000" :show-tooltip="false"></el-slider>
-      </div>
-      <div class="level">
-        <p>住宿等级</p>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            <span>不限</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="type">
-        <p>住宿类型</p>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            <span>不限</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="equipment">
-        <p>酒店设备</p>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            <span>不限</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="brand">
-        <p>酒店品牌</p>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            <span>不限</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </div>
+        <!-- 查看价格 -->
+        <el-button
+          type="primary"
+          style="margin-left:15px"
+          @click="checkPrice"
+          v-loading.fullscreen.lock="fullscreenLoading"
+        >查看价格</el-button>
+      </el-form>
 
-    <!--酒店展示 -->
-    <div class="hotelshowlist">
-      <div class="hotelslist" v-for="(item,index) in backHotelInfo" :key="index">
-        <div class="hotelimg">
-          <img :src="item.photos" />
-        </div>
-        <div class="hotelpreinfo">
-          <h3>{{item.name}}</h3>
-          <p>{{item.alias}}</p>
-          <div class="hotelstar">
-            <el-rate
-              v-model="pointer"
-              disabled
-              show-score
-              text-color="#ff9900"
-              score-template="{value}"
-            ></el-rate>
-            <span>
-              <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>条评价
-            </span>
-            <span>
-              <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>篇游记
-            </span>
-          </div>
-          <p>
-            <i class="el-icon-map-location"></i>
-            <span>位于:{{item.address}}</span>
-          </p>
-        </div>
-        <div class="pricelist">
-          <a href="https://hotels.ctrip.com/hotel/8627044.html#ctm_ref=ctr_hp_sb_lst">
-            <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
-              <div>{{item2.name}}</div>
-              <div>
-                <span class="pricecolor">
-                  ￥{{item.price}}
-                  <span>起</span>
-                </span>
-                <i class="el-icon-arrow-right"></i>
+      <!-- 高德地图展示 -->
+      <div class="map">
+        <script
+          type="text/javascript"
+          src="https://webapi.amap.com/maps?v=1.4.15&key=	fba3fa19294ea55fb391428ba742810d"
+        ></script>
+        <div class="hotelinfo">
+          <div class="infoup">
+            <div class="area">区域:</div>
+            <div>
+              <div class="areatown">
+                <h3 v-if="ishowArea">暂无数据</h3>
+                <span v-for="(item,index) in cityinfolist[0].scenics" :key="index">{{item.name}}</span>
+              </div>
+              <div class="showAll">
+                <i class="el-icon-download" style="font-size:12px" @click="showAllcityInfo">显示全部城市信息</i>
               </div>
             </div>
-          </a>
+          </div>
+          <div class="infodown">
+            <div class="aveprice">
+              均价
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="等级均价由平日价格计算得出,节假日价格会有上浮"
+                placement="top-start"
+              >
+                <el-button>?</el-button>
+              </el-tooltip>:
+            </div>
+            <div class="queen">
+              <div class="one">
+                <span class="iconfont icon-icon_huangguan" v-for="item in 3" :key="item.id"></span>￥332
+              </div>
+              <div class="one">
+                <span class="iconfont icon-icon_huangguan" v-for="item in 4" :key="item.id"></span>￥521
+              </div>
+              <div class="one">
+                <span class="iconfont icon-icon_huangguan" v-for="item in 5" :key="item.id"></span>￥768
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="container"></div>
+      </div>
+
+      <!-- 条件筛选 -->
+      <div class="condition">
+        <div class="price">
+          <p>
+            <span>价格</span>
+            <span>{{showPrice}}</span>
+          </p>
+          <el-slider
+            v-model="showPrice"
+            :max="4000"
+            :show-tooltip="false"
+            @change="changePrice(showPrice)"
+            :step="10"
+          ></el-slider>
+        </div>
+        <div class="level">
+          <p>住宿等级</p>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <span>不限</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="type">
+          <p>住宿类型</p>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <span>不限</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="equipment">
+          <p>酒店设备</p>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <span>不限</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="brand">
+          <p>酒店品牌</p>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <span>不限</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
+
+      <!--酒店展示 -->
+      <div class="hotelshowlist">
+        <div class="hotelslist" v-for="(item,index) in backHotelInfo" :key="index">
+          <div class="hotelimg">
+            <img :src="item.photos" />
+          </div>
+          <div class="hotelpreinfo">
+            <h3 @click="$router.push(`/hotel/detail${item.id}`)">{{item.name}}</h3>
+            <p>{{item.alias}}</p>
+            <div class="hotelstar">
+              <el-rate
+                v-model="pointer"
+                disabled
+                show-score
+                text-color="#ff9900"
+                score-template="{value}"
+              ></el-rate>
+              <span>
+                <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>条评价
+              </span>
+              <span>
+                <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>篇游记
+              </span>
+            </div>
+            <p>
+              <i class="el-icon-map-location"></i>
+              <span>位于:{{item.address}}</span>
+            </p>
+          </div>
+          <!-- </nuxt-link> -->
+          <div class="pricelist">
+            <a href="https://hotels.ctrip.com/hotel/8627044.html#ctm_ref=ctr_hp_sb_lst">
+              <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
+                <div>{{item2.name}}</div>
+                <div>
+                  <span class="pricecolor">
+                    ￥{{item2.price}}
+                    <span>起</span>
+                  </span>
+                  <i class="el-icon-arrow-right"></i>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- 分页功能 -->
+      <div class="fenye">
+        <el-pagination
+          background
+          @current-change="handleCurrentChange"
+          :current-page="start"
+          :page-size="100"
+          layout=" prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
     </div>
-    <!-- 分页功能 -->
-    <div class="fenye">
-      <el-pagination
-        background
-        @current-change="handleCurrentChange"
-        :current-page="start"
-        :page-size="100"
-        layout=" prev, pager, next, jumper"
-        :total="1000"
-      ></el-pagination>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -273,6 +275,7 @@ export default {
             backHotelInfo: [],
             // 下一页显示多少条数据
             start: 0,
+            total: 0,
             // 加载显示
             fullscreenLoading: false,
             // 显示选择人数的框
@@ -284,7 +287,11 @@ export default {
                 adult: ''
             },
             // 当前位置信息
-            localInfo: {}
+            localInfo: {},
+            // 暂无数据
+            ishowArea: true,
+            //酒店经纬度集合
+            earth: []
         }
     },
     mounted() {
@@ -294,17 +301,22 @@ export default {
             // map是一个地图的对象
             var map = new AMap.Map('container', {
                 zoom: 11, //级别
-                resizeEnable: true //自动定位到当前位置
+                // center: [113.30, 22.80],//顺德经纬度
+                resizeEnable: false //自动定位到当前位置
             })
             this.map = map
-
             // 创建默认图标的点标记
-            var marker = new AMap.Marker({
-                position: new AMap.LngLat(113.3, 22.8), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                title: '北京'
+            var marker1 = new AMap.Marker({
+                position: new AMap.LngLat(113.122717, 23.028762), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                title: '佛山市'
             })
-            map.add(marker)
-
+            var marker2 = new AMap.Marker({
+                position: new AMap.LngLat(113.1228, 23.00842), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                title: '禅城市'
+            })
+            let marklist=[marker1,marker2]
+            map.add(marklist)
+            // 弹框提示当前位置
             AMap.plugin('AMap.CitySearch', () => {
                 var citySearch = new AMap.CitySearch()
                 citySearch.getLocalCity((status, result) => {
@@ -318,16 +330,25 @@ export default {
                     }
                 })
             })
-        }, 1000)
+        }, 200)
     },
     methods: {
         // 封装请求城市酒店
-        async getHotel(cityId, start) {
+        async getHotel(cityId, start, prcie) {
             const res = await this.$axios.get('/hotels', {
-                params: { city: cityId, _start: start }
+                params: {
+                    city: cityId, //城市id
+                    _start: start, //显示多少数据
+                    price_It: prcie
+                }
             })
             this.backHotelInfo = res.data.data
-            console.log(this.backHotelInfo)
+            console.log(res)
+            this.total = res.data.total
+            this.earth = this.backHotelInfo.map(v => {
+                return v.location
+            })
+            // console.log(this.earth)
         },
         //相当于change事件，一旦输入框的值变化就变化
         querySearch(value, cb) {
@@ -366,6 +387,7 @@ export default {
             this.cityinfolist = res.data.data
             console.log(this.cityinfolist[0])
             this.getHotel(this.cityinfolist[0].id)
+            this.ishowArea = false
         },
         //点击展示全部城市信息
         showAllcityInfo() {
@@ -405,7 +427,31 @@ export default {
         chooseChild() {
             this.options.value = `${this.options.adult}${this.options.child}`
             this.visible = false
+        },
+        // ------------------------拖动价格--------------------
+        changePrice(showPrice) {
+            console.log(this.cityinfolist[0].id)
+
+            this.$axios({
+                url: '/hotels',
+                params: {
+                    price_lt: showPrice,
+                    city: this.cityinfolist[0].id
+                }
+            }).then(res => {
+                this.backHotelInfo = res.data.data
+                this.total = res.data.total
+            })
         }
+        //点击跳转页面
+        // handleCityId(){
+        //     this.$router.push({
+        //         url:'/hotel/detail',
+        //         query:{
+        //             city:197
+        //         }
+        //     })
+        // }
     }
 }
 </script>
@@ -463,6 +509,9 @@ body {
             height: 60px;
             transition: all 0.3s;
             overflow: hidden;
+            h3 {
+                font-weight: normal;
+            }
             span {
                 display: inline-block;
                 padding: 5px;
@@ -479,10 +528,13 @@ body {
         margin-top: 10px;
         .queen {
             margin-top: 5px;
-            display: flex;
-            flex-direction: column;
-            span {
-                margin: 5px 0;
+            // display: flex;
+            // flex-direction: column;
+            div {
+                margin: 10px 0;
+                span {
+                    color: orange;
+                }
             }
         }
     }
@@ -553,7 +605,6 @@ body {
 }
 //酒店区域
 .hotelslist {
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     height: 220px;
@@ -572,6 +623,7 @@ body {
         h3 {
             font-size: 25px;
             font-weight: normal;
+            cursor: pointer;
         }
         h3:hover {
             text-decoration: underline;
