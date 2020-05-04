@@ -2,14 +2,14 @@
   <div class="other-user">
     <div class="other">
         <!-- 这里是调用自己的地方 -->
-        <comlist :data="data.parent" v-if="data.parent"/>
+        <comlist :data="data.parent" v-if="data.parent" @replybtn="replySomeone"/>
       <div class="other-left">
           
         <div>
           <span>{{data.account.nickname}}</span>
           <span>{{moment(data.created_at).format('YYYY-MM-DD hh:mm')}}</span>
         </div>
-        <el-button type="primary" size="mini">回复</el-button>
+        <el-button type="primary" size="mini" @click="replySomeone(data)">回复</el-button>
       </div>
       <p>{{data.content}}</p>
       <div>
@@ -18,9 +18,7 @@
         v-for="(item2,index2) in data.pics"
         :key="index2"
       />
-      
       </div>
-      
     </div>
   </div>
 </template>
@@ -38,9 +36,20 @@ export default {
     },
     data() {
         return {
-            moment
+            moment,
+            // 回复对象
+            reply: {
+                isShow: false,
+                showReplyObject: '',
+                id:''
+            }
         }
     },
+    methods:{
+        replySomeone(data){
+            this.$emit('replybtn',data);
+        }
+    }
 }
 </script>
 
@@ -50,7 +59,7 @@ export default {
     // padding: 5px;
     box-sizing: border-box;
     border-radius: 5px;
-    border:1px solid #333;
+    border:1px solid gray;
     p {
         padding: 0;
         padding: 5px 0;

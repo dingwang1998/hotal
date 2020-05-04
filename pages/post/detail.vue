@@ -18,11 +18,11 @@
 
         <!-- 评论与分享 -->
         <div class="commentAndShare">
-          <div>
+          <div @click="autoFocus">
             <i class="el-icon-edit"></i>
             <span>写评论(162)</span>
           </div>
-          <div>
+          <div @click="$message.error('暂时未开放分享')">
             <i class="el-icon-share"></i>
             <span>分享({{postInfo[0].like}})</span>
           </div>
@@ -31,18 +31,31 @@
         <!-- 评论区域 -->
         <div class="comment-wrapll">
           <p>评论</p>
-          <el-tag type="success" style="margin-bottom:5px">回复@</el-tag>
-          <el-input type="textarea" v-model="form.value" class="textarea" placeholder="说点什么..."></el-input>
+          <el-tag
+            type="success"
+            style="margin-bottom:5px"
+            v-if="reply.isShow"
+          >回复@{{reply.showReplyObject}}</el-tag>
+          <el-input
+            type="textarea"
+            v-model="form.value"
+            class="textarea"
+            placeholder="说点什么..."
+            ref="repyInput"
+          ></el-input>
           <!-- 上传图片 -->
           <div class="upload">
             <div class="upload-left">
               <el-upload
-                :action="$axios.defaults.baseURL+`/upload`"
-                :headers="{Authorization: 'Bearer ' + $store.state.user.userJson.token}"
+                action="http://157.122.54.189:9095/upload"
+                name="files"
                 list-type="picture-card"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
                 class="el-upload"
+                :file-list="fileList"
+                :on-success="handleImageSuccess"
+                ref="clear"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
@@ -63,7 +76,6 @@
                 <div class="userinfo">
                   <p>{{item.account.nickname}}</p>
                   <p>
-                    <!-- <span>{{item.account.created_at}}</span> -->
                     <span>{{moment(item.created_at).format('YYYY-MM-DD hh:mm')}}</span>
                   </p>
                 </div>
@@ -74,7 +86,7 @@
             </div>
             <div class="content">
               <!-- 这里放循环评论的地方 -->
-              <comlist :data="item.parent" v-if="item.parent" />
+              <comlist :data="item.parent" v-if="item.parent" @replybtn="replySomeone" />
               <p>{{item.content}}</p>
               <img
                 :src="$axios.defaults.baseURL+item2.url"
@@ -154,6 +166,14 @@ export default {
             start: 0,
             // 评论总书
             total: 0,
+            // 回复对象
+            reply: {
+                isShow: false,
+                showReplyObject: '',
+                id: ''
+            },
+            // 照片墙图片的列表
+            fileList: [],
         }
     },
     mounted() {
@@ -168,7 +188,6 @@ export default {
             })
             const { data } = res.data
             this.postInfo = data
-            console.log(this.postInfo)
         },
         //获取文章评论
         async commentList(limit1, start1) {
@@ -181,8 +200,10 @@ export default {
             })
             this.commentLists = commentList.data.data
             this.total = commentList.data.total
+            console.log(this.commentLists);
+            
+            
         },
-
         // 预览图片
         handlePictureCardPreview(file) {
             this.dialogImageUrl = file.url
@@ -204,32 +225,69 @@ export default {
         },
         //点击提交按钮
         submitBtn() {
-            if(!this.form.value)return this.$message.error('评论内容不能为空');
-            this.$axios({
-                method: 'POST',
-                url: '/comments',
-                data: {
-                    content: this.form.value,
-                    pics: [],
-                    post: this.$route.query.id
-                },
-                headers: {
-                    Authorization:
-                        `Bearer ` + this.$store.state.user.userJson.token
-                }
-            }).then(res => {
-                console.log(res)
-                const { message } = res.data
-                if (res.status == 200) {
-                    this.$message.success(message)
-                    this.commentList(this.limit, this.start)
+            // if (!this.form.value) return this.$message.error('评论内容不能为空')
+            if (this.reply.isShow) {
+                this.$axios({
+                    url: '/comments',
+                    method: 'POST',
+                    data: {
+                        content: this.form.value,
+                        follow: this.reply.id,
+                        post: this.$route.query.id, 
+                        pics:this.fileList,
+                    },
+                    headers: {
+                        Authorization:
+                            `Bearer ` + this.$store.state.user.userJson.token
+                    }
+                }).then(res => {
+                    this.reply.isShow = false
                     this.form.value = ''
-                }
-            })
+                    this.$message.success(res.data.message)
+                    this.commentList(this.limit, this.start)
+                    this.$refs.clear.clearFiles()
+                })
+            } else {
+                this.$axios({
+                    method: 'POST',
+                    url: '/comments',
+                    data: {
+                        content: this.form.value,
+                        pics:this.fileList,
+                        post: this.$route.query.id,
+                        follow: this.reply.id,
+                    },
+                    headers: {
+                        Authorization:
+                            `Bearer ` + this.$store.state.user.userJson.token
+                    }
+                }).then(res => {
+                    this.reply.isShow = false
+                    const { message } = res.data
+                        this.form.value = ''
+                        this.$message.success(message)
+                        this.commentList(this.limit, this.start)
+                        this.$refs.clear.clearFiles()
+                })
+            }
         },
         //回复某人
-        replySomeone(item){
-            console.log(item);
+        replySomeone(item) {
+            this.reply.id = item.id
+            this.reply.isShow = true
+            this.reply.showReplyObject = item.account.nickname
+            this.$refs.repyInput.focus()
+        }, 
+        //写评论
+        autoFocus() {
+            this.$refs.repyInput.focus()
+        },
+        //成功上传图片之后
+        handleImageSuccess(response, file, fileList){
+            // console.log(fileList[0]);
+            console.log(fileList[0].response[0]);
+            this.fileList[0]=fileList[0].response[0];
+            // console.log(this.fileList[0]);
         }
     },
     components: {
@@ -259,11 +317,6 @@ h2 {
 }
 .post-info {
     width: 100%;
-    /deep/ p {
-        img {
-            width: 100% !important;
-        }
-    }
     /deep/ p {
         span {
             img {
@@ -315,9 +368,10 @@ h2 {
     }
 }
 .comment-list {
+    margin-top: 15px;
     font-size: 14px;
     width: 100%;
-    padding: 10px 0;
+    padding: 10px  0;
     border-bottom: 1px solid #eee;
     box-sizing: border-box;
     .user {
@@ -335,12 +389,17 @@ h2 {
     }
 }
 .totalinfo {
+    margin-bottom: 5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .content {
+    background-color: #f6f6f6;
     margin-left: 60px;
+    padding: 5px;
+    border: 1px solid gray;
+    border-radius: 5px;
     img {
         width: 80px;
         height: 80px;

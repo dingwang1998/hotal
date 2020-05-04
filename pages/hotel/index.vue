@@ -3,7 +3,7 @@
     <!-- 面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item>酒店</el-breadcrumb-item>
-      <el-breadcrumb-item>酒店预订</el-breadcrumb-item>
+      <el-breadcrumb-item>{{this.cityinfolist[0].name}}酒店预订</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 预定部分 -->
@@ -101,14 +101,14 @@
               <strong>👑</strong>
               <strong>👑</strong>
               <strong>👑</strong>
-              <span>#333</span>
+              <span>￥333</span>
             </span>
             <span>
               <strong>👑</strong>
               <strong>👑</strong>
               <strong>👑</strong>
               <strong>👑</strong>
-              <span>666</span>
+              <span>￥521</span>
             </span>
             <span>
               <strong>👑</strong>
@@ -116,7 +116,7 @@
               <strong>👑</strong>
               <strong>👑</strong>
               <strong>👑</strong>
-              <span>999</span>
+              <span>￥768</span>
             </span>
           </div>
         </div>
@@ -205,10 +205,10 @@
               score-template="{value}"
             ></el-rate>
             <span>
-              <span class="pricecolor">6</span>条评价
+              <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>条评价
             </span>
             <span>
-              <span class="pricecolor">98</span>篇游记
+              <span class="pricecolor">{{Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10)}}</span>篇游记
             </span>
           </div>
           <p>
@@ -217,16 +217,18 @@
           </p>
         </div>
         <div class="pricelist">
-          <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
-            <div>{{item2.name}}</div>
-            <div>
-              <span class="pricecolor">
-                ${{item.price}}
-                <span>起</span>
-              </span>
-              <i class="el-icon-arrow-right"></i>
+          <a href="https://hotels.ctrip.com/hotel/8627044.html#ctm_ref=ctr_hp_sb_lst">
+            <div class="travelname" v-for="(item2,index2) in item.products" :key="index2">
+              <div>{{item2.name}}</div>
+              <div>
+                <span class="pricecolor">
+                  ￥{{item.price}}
+                  <span>起</span>
+                </span>
+                <i class="el-icon-arrow-right"></i>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
       </div>
     </div>
@@ -286,35 +288,37 @@ export default {
         }
     },
     mounted() {
-        var map = new AMap.Map('container')
-        // Amap在模板中导入js文件之后就应经是一个全局变量了
-        // map是一个地图的对象
-        var map = new AMap.Map('container', {
-            zoom: 11, //级别
-            resizeEnable: true //自动定位到当前位置
-        })
-        this.map = map
-
-        // 创建默认图标的点标记
-        var marker = new AMap.Marker({
-            position: new AMap.LngLat(113.3, 22.8), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-            title: '北京'
-        })
-        map.add(marker)
-
-        AMap.plugin('AMap.CitySearch', () => {
-            var citySearch = new AMap.CitySearch()
-            citySearch.getLocalCity((status, result) => {
-                if (status === 'complete' && result.info === 'OK') {
-                    // 查询成功，result即为当前所在城市信息
-                    // console.log(result.city)
-                    this.$alert(`${result.city}`, '当前定位', {
-                        confirmButtonText: '确定',
-                        callback: action => {}
-                    })
-                }
+        setTimeout(() => {
+            var map = new AMap.Map('container')
+            // Amap在模板中导入js文件之后就应经是一个全局变量了
+            // map是一个地图的对象
+            var map = new AMap.Map('container', {
+                zoom: 11, //级别
+                resizeEnable: true //自动定位到当前位置
             })
-        })
+            this.map = map
+
+            // 创建默认图标的点标记
+            var marker = new AMap.Marker({
+                position: new AMap.LngLat(113.3, 22.8), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                title: '北京'
+            })
+            map.add(marker)
+
+            AMap.plugin('AMap.CitySearch', () => {
+                var citySearch = new AMap.CitySearch()
+                citySearch.getLocalCity((status, result) => {
+                    if (status === 'complete' && result.info === 'OK') {
+                        // 查询成功，result即为当前所在城市信息
+                        // console.log(result.city)
+                        this.$alert(`${result.city}`, '当前定位', {
+                            confirmButtonText: '确定',
+                            callback: action => {}
+                        })
+                    }
+                })
+            })
+        }, 1000)
     },
     methods: {
         // 封装请求城市酒店
@@ -549,6 +553,7 @@ body {
 }
 //酒店区域
 .hotelslist {
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     height: 220px;
@@ -567,6 +572,9 @@ body {
         h3 {
             font-size: 25px;
             font-weight: normal;
+        }
+        h3:hover {
+            text-decoration: underline;
         }
         width: 350px;
         p {
