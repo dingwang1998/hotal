@@ -299,17 +299,11 @@ export default {
                 resizeEnable: false //自动定位到当前位置
             })
             this.map = map
-            // 创建默认图标的点标记
-            var marker1 = new AMap.Marker({
-                position: new AMap.LngLat(113.122717, 23.028762), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                title: '佛山市'
-            })
-            // var marker2 = new AMap.Marker({
-            //     position: new AMap.LngLat(113.1228, 23.00842), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-            //     title: '禅城市'
-            // })
+            // 创建默认图标的点标记  {position: new AMap.LngLat(113.122717, 23.028762), title: '佛山市'},
+            var marker1 = new AMap.Marker({position: new AMap.LngLat(113.122717, 23.028762), title: '佛山市'},)
             let marklist = [marker1]
             map.add(marklist)
+
             // 弹框提示当前位置
             AMap.plugin('AMap.CitySearch', () => {
                 var citySearch = new AMap.CitySearch()
@@ -337,12 +331,12 @@ export default {
                 }
             })
             this.backHotelInfo = res.data.data
-            console.log(res)
+            console.log(this.backHotelInfo)
             this.total = res.data.total
             this.earth = this.backHotelInfo.map(v => {
                 return v.location
             })
-            // console.log(this.earth)
+            console.log(this.earth)
         },
         //相当于change事件，一旦输入框的值变化就变化
         querySearch(value, cb) {
@@ -379,7 +373,7 @@ export default {
                 }
             })
             this.cityinfolist = res.data.data
-            console.log(this.cityinfolist[0])
+            // console.log(this.cityinfolist[0])
             this.getHotel(this.cityinfolist[0].id)
             this.ishowArea = false
         },

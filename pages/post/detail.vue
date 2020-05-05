@@ -139,7 +139,7 @@
                 <span>阅读:24</span>
               </div>
             </div>
-          </div> -->
+          </div>-->
         </div>
       </el-col>
     </el-row>
@@ -192,7 +192,6 @@ export default {
         }).then(res => {
             const { data } = res.data
             this.tuijian = data
-            console.log(data)
         })
     },
     methods: {
@@ -258,7 +257,7 @@ export default {
                     this.form.value = ''
                     this.$message.success(res.data.message)
                     this.commentList(this.limit, this.start)
-                    this.fileList=[]
+                    this.fileList = []
                 })
             } else {
                 this.$axios({
@@ -280,17 +279,17 @@ export default {
                     this.form.value = ''
                     this.$message.success(message)
                     this.commentList(this.limit, this.start)
-                    this.fileList=[]
+                    this.fileList = []
                 })
             }
         },
         //回复某人
         replySomeone(item) {
-            this.reply.id = item.id;
-            this.reply.isShow = true;
-            this.reply.showReplyObject = item.account.nickname;
-            this.$refs.repyInput.focus();
-            this.$refs.clearFileList.clearFiles();
+            this.reply.id = item.id
+            this.reply.isShow = true
+            this.reply.showReplyObject = item.account.nickname
+            this.$refs.repyInput.focus()
+            this.$refs.clearFileList.clearFiles()
         },
         //写评论
         autoFocus() {
@@ -474,17 +473,16 @@ h2 {
         justify-content: space-between;
         padding: 10px 0;
         border-bottom: 1px solid #eee;
-        /deep/.postImgShow{
+        /deep/.postImgShow {
             display: flex;
-         p{
-            display: flex;
-            align-items: center;
-            img{
-                width: 65px;
-
+            p {
+                display: flex;
+                align-items: center;
+                img {
+                    width: 65px;
+                }
             }
         }
-    }
     }
     .postincluep {
         display: flex;
@@ -513,7 +511,5 @@ h2 {
         padding: 20px 0;
         border-bottom: 1px solid #eee;
     }
-    
 }
-
 </style>
