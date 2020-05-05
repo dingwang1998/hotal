@@ -1,7 +1,6 @@
 <template>
   <div class="other-user">
     <div class="other">
-        <!-- 这里是调用自己的地方 -->
         <comlist :data="data.parent" v-if="data.parent" @replybtn="replySomeone"/>
       <div class="other-left">
           

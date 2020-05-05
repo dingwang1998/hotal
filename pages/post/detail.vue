@@ -55,7 +55,7 @@
                 class="el-upload"
                 :file-list="fileList"
                 :on-success="handleImageSuccess"
-                ref="clear"
+                ref="clearFileList"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
@@ -120,14 +120,14 @@
             :key="index"
             @click="toPostDetail(item)"
           >
-            <div v-html="item.content"></div>
+            <div v-html="item.content" class="postImgShow"></div>
             <div class="fontset">
               <span>2020-20-40</span>
               <span>04:25</span>
               <span>阅读:24</span>
             </div>
           </div>
-          <div class="postincluep">
+          <!-- <div class="postincluep">
             <div class="postimg">
               <img src="http://157.122.54.189:9095/uploads/20f093ff243d484b9c7776f47794911f.jpg" />
             </div>
@@ -139,7 +139,7 @@
                 <span>阅读:24</span>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </el-col>
     </el-row>
@@ -258,7 +258,7 @@ export default {
                     this.form.value = ''
                     this.$message.success(res.data.message)
                     this.commentList(this.limit, this.start)
-                    this.$refs.clear.clearFiles()
+                    this.fileList=[]
                 })
             } else {
                 this.$axios({
@@ -280,16 +280,17 @@ export default {
                     this.form.value = ''
                     this.$message.success(message)
                     this.commentList(this.limit, this.start)
-                    this.$refs.clear.clearFiles()
+                    this.fileList=[]
                 })
             }
         },
         //回复某人
         replySomeone(item) {
-            this.reply.id = item.id
-            this.reply.isShow = true
-            this.reply.showReplyObject = item.account.nickname
-            this.$refs.repyInput.focus()
+            this.reply.id = item.id;
+            this.reply.isShow = true;
+            this.reply.showReplyObject = item.account.nickname;
+            this.$refs.repyInput.focus();
+            this.$refs.clearFileList.clearFiles();
         },
         //写评论
         autoFocus() {
@@ -322,6 +323,7 @@ export default {
             }).then(res => {
                 const { data } = res.data
                 this.postInfo = data
+                this.commentList(this.limit, this.start)
             })
         }
     },
@@ -466,13 +468,23 @@ h2 {
         border-bottom: 1px solid #eee;
     }
     .postlistform {
-        height: 70px;
+        height: 90px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: 20px 0;
-
+        padding: 10px 0;
         border-bottom: 1px solid #eee;
+        /deep/.postImgShow{
+            display: flex;
+         p{
+            display: flex;
+            align-items: center;
+            img{
+                width: 65px;
+
+            }
+        }
+    }
     }
     .postincluep {
         display: flex;
@@ -501,5 +513,7 @@ h2 {
         padding: 20px 0;
         border-bottom: 1px solid #eee;
     }
+    
 }
+
 </style>
