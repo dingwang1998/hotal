@@ -136,8 +136,9 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            <el-checkbox-group v-model="hotelstar" >
+              <el-checkbox :label="item.level" :value='item.level' v-for="(item,index) in hotelCategory.levels" :key="index" @change='chooseLevel(item.level)'>{{item.name}}</el-checkbox>
+            </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -149,8 +150,15 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            <el-checkbox-group v-model="hoteltype">
+              <el-checkbox
+                :label="item1.id"
+                :value="item1.id"
+                v-for="(item1,index1) in hotelCategory.types"
+                :key="index1"
+                @change="chooseType"
+              >{{item1.name}}</el-checkbox>
+            </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -162,8 +170,13 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            <el-checkbox-group v-model="hotelequipment">
+              <el-checkbox
+                :label="item2.name"
+                v-for="(item2,index2) in hotelCategory.assets"
+                :key="index2"
+              ></el-checkbox>
+            </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -175,8 +188,9 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
+            <el-checkbox-group v-model="hotelbrand">
+              <el-checkbox :label="item3.name" v-for="(item3,index3) in hotelCategory.brands" :key="index3"></el-checkbox>
+            </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -227,6 +241,9 @@
           </a>
         </div>
       </div>
+      <div class="noData" v-if="isShowNoData">
+          <h3>暂时没有您想要的酒店</h3>
+      </div>
     </div>
     <!-- 分页功能 -->
     <div class="fenye">
@@ -234,7 +251,7 @@
         background
         @current-change="handleCurrentChange"
         :current-page="start"
-        :page-size="100"
+        :page-size="10"
         layout=" prev, pager, next, jumper"
         :total="total"
       ></el-pagination>
@@ -259,8 +276,6 @@ export default {
             map: '',
             // 酒店价格调整
             hotelprice: 4000,
-            //酒店价格显示
-            showPrice: 4000,
             // 酒店评分
             pointer: 3.7,
             // 查找的城市信息
@@ -285,7 +300,24 @@ export default {
             // 暂无数据
             ishowArea: true,
             //酒店经纬度集合
-            earth: []
+            earth: [],
+            marklist: [],
+            //中心点
+            center: [],
+             //酒店价格显示
+            showPrice: 4000,
+            //酒店星级
+            hotelstar: [],
+            //酒店类别
+            hoteltype: [],
+            //酒店设施
+            hotelequipment: [],
+            //酒店品牌
+            hotelbrand: [],
+            // 酒店详情
+            hotelCategory: [],
+            // 是否展示数据
+            isShowNoData:false
         }
     },
     mounted() {
@@ -299,28 +331,42 @@ export default {
                 resizeEnable: false //自动定位到当前位置
             })
             this.map = map
-            // 创建默认图标的点标记  {position: new AMap.LngLat(113.122717, 23.028762), title: '佛山市'},
-            var marker1 = new AMap.Marker({position: new AMap.LngLat(113.122717, 23.028762), title: '佛山市'},)
-            let marklist = [marker1]
-            map.add(marklist)
+
+            this.markList()
 
             // 弹框提示当前位置
-            AMap.plugin('AMap.CitySearch', () => {
-                var citySearch = new AMap.CitySearch()
-                citySearch.getLocalCity((status, result) => {
-                    if (status === 'complete' && result.info === 'OK') {
-                        // 查询成功，result即为当前所在城市信息
-                        // console.log(result.city)
-                        this.$alert(`${result.city}`, '当前定位', {
-                            confirmButtonText: '确定',
-                            callback: action => {}
-                        })
-                    }
-                })
-            })
+            // AMap.plugin('AMap.CitySearch', () => {
+            //     var citySearch = new AMap.CitySearch()
+            //     citySearch.getLocalCity((status, result) => {
+            //         if (status === 'complete' && result.info === 'OK') {
+            //             // 查询成功，result即为当前所在城市信息
+            //             // console.log(result.city)
+            //             this.$alert(`${result.city}`, '当前定位', {
+            //                 confirmButtonText: '确定',
+            //                 callback: action => {}
+            //             })
+            //         }
+            //     })
+            // })
+            this.getHotelBrand()
         }, 200)
     },
     methods: {
+        //点标记
+        markList(backHotelInfo) {
+            //遍历给经纬度加酒店title
+            this.earth.forEach((v1, i1) => {
+                return (v1.hotelName = backHotelInfo[i1].name)
+            })
+            this.marklist = []
+            this.earth.forEach((v, i) => {
+                return (this.marklist[i] = new AMap.Marker({
+                    position: new AMap.LngLat(v.longitude, v.latitude),
+                    title: `${v.hotelName}`
+                }))
+            })
+            this.map.add(this.marklist)
+        },
         // 封装请求城市酒店
         async getHotel(cityId, start, prcie) {
             const res = await this.$axios.get('/hotels', {
@@ -336,7 +382,23 @@ export default {
             this.earth = this.backHotelInfo.map(v => {
                 return v.location
             })
-            console.log(this.earth)
+            // console.log(this.earth[0]);
+            this.center = this.earth[0]
+            console.log(this.center)
+
+            this.map.remove(this.marklist)
+            setTimeout(() => {
+                this.markList(this.backHotelInfo)
+            }, 10)
+        },
+        //封装请求酒店选项
+        getHotelBrand() {
+            this.$axios({
+                url: '/hotels/options'
+            }).then(res => {
+                const { data } = res.data
+                this.hotelCategory=data;
+            })
         },
         //相当于change事件，一旦输入框的值变化就变化
         querySearch(value, cb) {
@@ -373,7 +435,6 @@ export default {
                 }
             })
             this.cityinfolist = res.data.data
-            // console.log(this.cityinfolist[0])
             this.getHotel(this.cityinfolist[0].id)
             this.ishowArea = false
         },
@@ -396,8 +457,9 @@ export default {
         },
         // 点击切换页数
         handleCurrentChange(value) {
-            console.log(value)
-            this.getHotel(this.cityinfolist[0].id, (value - 1) * 5)
+            // console.log(value)
+            // this.map.add([])
+            this.getHotel(this.cityinfolist[0].id, (value - 1) * 5, null)
         },
         //点击查询价格
         checkPrice() {
@@ -416,10 +478,8 @@ export default {
             this.options.value = `${this.options.adult}${this.options.child}`
             this.visible = false
         },
-        // ------------------------拖动价格--------------------
+        // 拖动价格
         changePrice(showPrice) {
-            console.log(this.cityinfolist[0].id)
-
             this.$axios({
                 url: '/hotels',
                 params: {
@@ -430,16 +490,44 @@ export default {
                 this.backHotelInfo = res.data.data
                 this.total = res.data.total
             })
-        }
+        },
         //点击跳转页面
-        // handleCityId(){
-        //     this.$router.push({
-        //         url:'/hotel/detail',
-        //         query:{
-        //             city:197
-        //         }
-        //     })
-        // }
+        handleCityId() {
+            this.$router.push({
+                url: '/hotel/detail',
+                query: {
+                    city: 197
+                }
+            })
+        },
+        // 封装筛选条件
+        hobbyHotel(city=null,price=null,level=null,type=null,brand=null){
+            this.$axios({
+                url:'/hotels',
+                params:{
+                    city:city,
+                    price_lt:price,//拖动价格
+                    hotellevel:level,//酒店星级
+                    hoteltype:type,//酒店设备类型
+                    hotelbrand:brand//酒店品牌
+                }
+            }).then(res=>{
+                // console.log(res);
+                if(res.data.data.length==0){
+                    this.isShowNoData=true
+                }
+                this.backHotelInfo=res.data.data;
+            })
+        },
+        //选择酒店等级
+        chooseLevel(level){ 
+            this.hobbyHotel(this.cityinfolist[0].id,this.showPrice,level)
+        },
+        //选择住宿类型
+        chooseType(){
+            console.log(this.hoteltype);
+            
+        }
     }
 }
 </script>
@@ -683,5 +771,22 @@ body {
         display: flex;
         justify-content: flex-end;
     }
+}
+// 复选框
+/deep/.el-checkbox {
+    width: 80px;
+    display: flex;
+    align-items: center;
+    // justify-content: space-between;
+    padding: 5px 0 5px 10px;
+}
+/deep/ .el-checkbox-group{
+    overflow: auto;
+    height: 180px;
+}
+.noData{
+    text-align: center;
+    padding: 50px 0;
+    color: gray;
 }
 </style>
