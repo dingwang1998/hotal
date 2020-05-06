@@ -118,7 +118,7 @@
       <div class="price">
         <p>
           <span>价格</span>
-          <span>{{showPrice}}</span>
+          <span>0~{{showPrice}}</span>
         </p>
         <el-slider
           v-model="showPrice"
@@ -126,6 +126,7 @@
           :show-tooltip="false"
           @change="changePrice(showPrice)"
           :step="10"
+          :min="1"
         ></el-slider>
       </div>
       <div class="level">
@@ -136,8 +137,14 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-checkbox-group v-model="hotelstar" >
-              <el-checkbox :label="item.level" :value='item.level' v-for="(item,index) in hotelCategory.levels" :key="index" @change='chooseLevel(item.level)'>{{item.name}}</el-checkbox>
+            <el-checkbox-group v-model="hotelstar">
+              <el-checkbox
+                :label="item.level"
+                :value="item.level"
+                v-for="(item,index) in hotelCategory.levels"
+                :key="index"
+                @change="chooseLevel(item.level)"
+              >{{item.name}}</el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
@@ -172,10 +179,12 @@
           <el-dropdown-menu slot="dropdown">
             <el-checkbox-group v-model="hotelequipment">
               <el-checkbox
-                :label="item2.name"
+                :label="item2.id"
+                :value="item2.id"
                 v-for="(item2,index2) in hotelCategory.assets"
                 :key="index2"
-              ></el-checkbox>
+                @change="chooseEquipment"
+              >{{item2.name}}</el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
@@ -189,7 +198,13 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-checkbox-group v-model="hotelbrand">
-              <el-checkbox :label="item3.name" v-for="(item3,index3) in hotelCategory.brands" :key="index3"></el-checkbox>
+              <el-checkbox
+                :label="item3.id"
+                :value="item3.id"
+                v-for="(item3,index3) in hotelCategory.brands"
+                :key="index3"
+                @change="chooseBrand"
+              >{{item3.name}}</el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
@@ -242,7 +257,7 @@
         </div>
       </div>
       <div class="noData" v-if="isShowNoData">
-          <h3>暂时没有您想要的酒店</h3>
+        <h3>暂时没有您想要的酒店</h3>
       </div>
     </div>
     <!-- 分页功能 -->
@@ -304,7 +319,7 @@ export default {
             marklist: [],
             //中心点
             center: [],
-             //酒店价格显示
+            //酒店价格显示
             showPrice: 4000,
             //酒店星级
             hotelstar: [],
@@ -317,7 +332,15 @@ export default {
             // 酒店详情
             hotelCategory: [],
             // 是否展示数据
-            isShowNoData:false
+            isShowNoData: false,
+            // --------------筛选拼接----------------------
+            city: '',
+            price_lt: '',
+            hotellevel_in: '',
+            hoteltype_in: '',
+            hotelasset_in: '',
+            hotelbrand_in: '',
+            totalUrl: ''
         }
     },
     mounted() {
@@ -383,8 +406,8 @@ export default {
                 return v.location
             })
             // console.log(this.earth[0]);
-            this.center = this.earth[0]
-            console.log(this.center)
+            // this.center = this.earth[0]
+            // console.log(this.center)
 
             this.map.remove(this.marklist)
             setTimeout(() => {
@@ -397,7 +420,7 @@ export default {
                 url: '/hotels/options'
             }).then(res => {
                 const { data } = res.data
-                this.hotelCategory=data;
+                this.hotelCategory = data
             })
         },
         //相当于change事件，一旦输入框的值变化就变化
@@ -435,6 +458,8 @@ export default {
                 }
             })
             this.cityinfolist = res.data.data
+            // console.log(this.cityinfolist);
+            this.cityinfolist.id = this.city
             this.getHotel(this.cityinfolist[0].id)
             this.ishowArea = false
         },
@@ -478,19 +503,7 @@ export default {
             this.options.value = `${this.options.adult}${this.options.child}`
             this.visible = false
         },
-        // 拖动价格
-        changePrice(showPrice) {
-            this.$axios({
-                url: '/hotels',
-                params: {
-                    price_lt: showPrice,
-                    city: this.cityinfolist[0].id
-                }
-            }).then(res => {
-                this.backHotelInfo = res.data.data
-                this.total = res.data.total
-            })
-        },
+
         //点击跳转页面
         handleCityId() {
             this.$router.push({
@@ -501,32 +514,104 @@ export default {
             })
         },
         // 封装筛选条件
-        hobbyHotel(city=null,price=null,level=null,type=null,brand=null){
+        hobbyHotel(
+            city = null,
+            price = null,
+            level = null,
+            type = null,
+            brand = null
+        ) {
             this.$axios({
-                url:'/hotels',
-                params:{
-                    city:city,
-                    price_lt:price,//拖动价格
-                    hotellevel:level,//酒店星级
-                    hoteltype:type,//酒店设备类型
-                    hotelbrand:brand//酒店品牌
+                url: '/hotels',
+                params: {
+                    city: city,
+                    price_lt: price, //拖动价格
+                    hotellevel: level, //酒店星级
+                    hoteltype: type, //酒店设备类型
+                    hotelbrand: brand //酒店品牌
                 }
-            }).then(res=>{
+            }).then(res => {
                 // console.log(res);
-                if(res.data.data.length==0){
-                    this.isShowNoData=true
+                if (res.data.data.length == 0) {
+                    this.isShowNoData = true
                 }
-                this.backHotelInfo=res.data.data;
+                this.backHotelInfo = res.data.data
             })
         },
+
+        // 拖动价格
+        changePrice(showPrice) {
+            this.price_lt = showPrice
+            console.log(
+                
+                    this.price_lt +
+                    this.hotellevel_in +
+                    this.hoteltype_in +
+                    this.hotelasset_in +
+                    this.hotelbrand_in
+            )
+
+            // this.$axios({
+            //     url: '/hotels',
+            //     params: {
+            //         price_lt: showPrice,
+            //         city: this.cityinfolist[0].id
+            //     }
+            // }).then(res => {
+            //     this.backHotelInfo = res.data.data
+            //     this.total = res.data.total
+            //     this.price_lt=showPrice;
+            // })
+        },
         //选择酒店等级
-        chooseLevel(level){ 
-            this.hobbyHotel(this.cityinfolist[0].id,this.showPrice,level)
+        chooseLevel(level) {
+            const Qs = require('qs')
+            this.hotellevel_in = decodeURIComponent(
+                Qs.stringify(
+                    { hotellevel_in: this.hotelstar },
+                    { arrayFormat: 'repeat' }
+                )
+            )
+            this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
+            console.log(this.totalUrl);
+            
+            // this.hobbyHotel(this.cityinfolist[0].id, this.showPrice, level)
         },
         //选择住宿类型
-        chooseType(){
-            console.log(this.hoteltype);
-            
+        chooseType() {
+            const Qs = require('qs')
+            this.hoteltype_in = decodeURIComponent(
+                Qs.stringify(
+                    { hoteltype_in: this.hoteltype },
+                    { arrayFormat: 'repeat' }
+                )
+            )
+            this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
+            console.log(this.totalUrl);
+        },
+        //选择设备
+        chooseEquipment() {
+            const Qs = require('qs')
+            this.hotelasset_in = decodeURIComponent(
+                Qs.stringify(
+                    { hoteltype_in: this.hoteltype },
+                    { arrayFormat: 'repeat' }
+                )
+            )
+          this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
+            console.log(this.totalUrl);
+        },
+        //选择品牌
+        chooseBrand() {
+            const Qs = require('qs')
+            this.hotelbrand_in = decodeURIComponent(
+                Qs.stringify(
+                    { hoteltype_in: this.hoteltype },
+                    { arrayFormat: 'repeat' }
+                )
+            )
+           this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
+            console.log(this.totalUrl);
         }
     }
 }
@@ -780,11 +865,11 @@ body {
     // justify-content: space-between;
     padding: 5px 0 5px 10px;
 }
-/deep/ .el-checkbox-group{
+/deep/ .el-checkbox-group {
     overflow: auto;
     height: 180px;
 }
-.noData{
+.noData {
     text-align: center;
     padding: 50px 0;
     color: gray;
