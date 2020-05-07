@@ -217,7 +217,7 @@
           <img :src="item.photos" />
         </div>
         <div class="hotelpreinfo">
-          <h3 @click="$router.push(`/hotel/detail${item.id}`)">{{item.name}}</h3>
+          <h3 @click="$router.push(`/hotel/detail?id=${item.id}`)">{{item.name}}</h3>
           <p>{{item.alias}}</p>
           <div class="hotelstar">
             <el-rate
@@ -353,23 +353,22 @@ export default {
                 resizeEnable: false //自动定位到当前位置
             })
             this.map = map
-
             this.markList()
-
             // 弹框提示当前位置
-            // AMap.plugin('AMap.CitySearch', () => {
-            //     var citySearch = new AMap.CitySearch()
-            //     citySearch.getLocalCity((status, result) => {
-            //         if (status === 'complete' && result.info === 'OK') {
-            //             // 查询成功，result即为当前所在城市信息
-            //             // console.log(result.city)
-            //             this.$alert(`${result.city}`, '当前定位', {
-            //                 confirmButtonText: '确定',
-            //                 callback: action => {}
-            //             })
-            //         }
-            //     })
-            // })
+            AMap.plugin('AMap.CitySearch', () => {
+                var citySearch = new AMap.CitySearch()
+                citySearch.getLocalCity((status, result) => {
+                    if (status === 'complete' && result.info === 'OK') {
+                        // 查询成功，result即为当前所在城市信息
+                        // console.log(result)
+                        // this.form.mainCity=result.city
+                        this.$alert(`${result.city}`, '当前定位', {
+                            confirmButtonText: '确定',
+                            callback: action => {}
+                        })
+                    }
+                })
+            })
             this.getHotelBrand()
         }, 200)
     },
@@ -401,6 +400,9 @@ export default {
             this.backHotelInfo = res.data.data
             console.log(this.backHotelInfo)
             this.total = res.data.total
+            if(res.data.total==0){
+                this.isShowNoData=true
+            };
             this.earth = this.backHotelInfo.map(v => {
                 return v.location
             })
@@ -549,6 +551,7 @@ export default {
         },
         //选择酒店等级
         chooseLevel(level) {
+            if(!this.city)return this.$message.error('请输入城市');
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hotellevel_in = `&${decodeURIComponent(
@@ -569,8 +572,8 @@ export default {
         },
         //选择住宿类型
         chooseType() {
+            if(!this.city)return this.$message.error('请输入城市');
             this.price_lt = `&price_lt=${this.showPrice}`
-
             const Qs = require('qs')
             this.hoteltype_in = `&${decodeURIComponent(
                 Qs.stringify(
@@ -590,6 +593,7 @@ export default {
         },
         //选择设备
         chooseEquipment() {
+            if(!this.city)return this.$message.error('请输入城市');
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hotelasset_in = `&${decodeURIComponent(
@@ -609,8 +613,8 @@ export default {
         },
         //选择品牌
         chooseBrand() {
+            if(!this.city)return this.$message.error('请输入城市');
             this.price_lt = `&price_lt=${this.showPrice}`
-
             const Qs = require('qs')
             this.hotelbrand_in = `&${decodeURIComponent(
                 Qs.stringify(
