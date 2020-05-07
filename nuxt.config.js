@@ -24,7 +24,7 @@ export default {
       {
         rel: 'stylesheet',
         type: 'text/css',
-        href: '//at.alicdn.com/t/font_1794855_od78cq1jzvt.css'
+        href: '//at.alicdn.com/t/font_1794855_pgm9mbhkfsr.css'
       }
     ]
   },

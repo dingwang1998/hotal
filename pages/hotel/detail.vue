@@ -5,13 +5,13 @@
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>{{hotelDetail.big_cate}}</el-breadcrumb-item>
         <el-breadcrumb-item>{{hotelDetail.real_city}}酒店</el-breadcrumb-item>
-        <el-breadcrumb-item>{{hotelDetail.name}}</el-breadcrumb-item>
+        <!-- <el-breadcrumb-item>{{hotelDetail.name}}</el-breadcrumb-item> -->
       </el-breadcrumb>
     </div>
 
     <!-- 酒店名称 -->
     <div class="hotelInfo">
-      <h2>{{hotelDetail.name}}</h2>
+      <!-- <h2>{{hotelDetail.name}}</h2> -->
       <p>{{hotelDetail.alias}}</p>
       <p>
         <span class="el-icon-location"></span>
@@ -31,7 +31,7 @@
 
     <!-- 表格 -->
     <el-table :data="priceInfo" style="width: 100%">
-      <el-table-column prop="name" label="价格来源" width="380"></el-table-column>
+      <!-- <el-table-column prop="name" label="价格来源" width="380"></el-table-column> -->
       <el-table-column prop="bestType" label="低价房型" width="380"></el-table-column>
       <el-table-column prop="price" label="最低价格/每晚" width="380">
         <span class="hightLight">￥{{priceInfo[0].price}}</span>
@@ -42,15 +42,25 @@
 
     <!-- 地图 -->
     <div class="mapPlace">
-      <!-- <script
+      <script
         type="text/javascript"
         src="https://webapi.amap.com/maps?v=1.4.15&key=fba3fa19294ea55fb391428ba742810d"
-      ></script>-->
+      ></script>
 
       <div class="mapview">
         <div id="container"></div>
       </div>
-      <div class="mapinfo">123</div>
+      <div class="mapinfo">
+        <div class="card">
+          <el-tabs v-model="activeName" type="card" @tab-click="handleClick" tab-position="top">
+            <el-tab-pane label="酒店" name="1"></el-tab-pane>
+            <el-tab-pane label="餐饮" name="2"></el-tab-pane>
+            <el-tab-pane label="交通" name="3"></el-tab-pane>
+            <el-tab-pane label="娱乐" name="4"></el-tab-pane>
+          </el-tabs>
+        </div>
+        <div id="panel"></div>
+      </div>
     </div>
 
     <!-- 酒店信息 -->
@@ -91,7 +101,7 @@
           <span>品牌信息</span>
         </div>
         <div class="detail">
-          <el-tag>{{hotelDetail.hotelbrand.name}}</el-tag>
+          <!-- <el-tag>{{hotelDetail.hotelbrand.name}}</el-tag> -->
         </div>
       </div>
     </div>
@@ -172,38 +182,81 @@ export default {
                 center: [113.3, 22.8], //中心点坐标
                 viewMode: '3D' //使用3D视图
             },
-            //点标记
-            mark: {
-                position: new AMap.LngLat(116.39, 39.9),
-                title: '酒店1'
-            },
             // 经纬度
-            localtion: {}
+            localtion: {},
+            // 点标记
+            mark: {
+                position: [],
+                title: '南山南'
+            },
+            //点击搜索项目
+            activeName: '',
+            //搜索条件
+            cityType: '酒店',
+            // 周边条件
+            searchNear: {},
+            cityName: ''
         }
     },
     mounted() {
         this.getHotelInfo()
 
-        // setTimeout(() => {
-        //     this.obj.center[0] = this.localtion.longitude
-        //     this.obj.center[1] = this.localtion.latitude
-        //     this.obj.position = new AMap.LngLat(
-        //         this.obj.center[0],
-        //         this.obj.center[1]
-        //     )
-        //     // console.log(this.obj)
-
-        //     let str = 'container'
-        //     let obj = this.obj
-        //     // 地图
-        //     var map = new AMap.Map(str, obj)
-        //     // 点标记
-        //     // var marker = new AMap.Marker(mark)
-        //     // map.add(marker)
-        //     this.map = map
-        // }, 2000)
+        setTimeout(() => {
+            let typeName = '酒店'
+            this.changeCondition(typeName)
+        }, 2000)
     },
     methods: {
+        changeCondition(typeName) {
+            this.obj.center[0] = this.localtion.longitude
+            this.obj.center[1] = this.localtion.latitude
+            this.obj.position = new AMap.LngLat(
+                this.obj.center[0],
+                this.obj.center[1]
+            )
+            this.mark.position = this.obj.center
+            this.mark.title = this.hotelDetail.name
+            this.mark.content = `<span class="iconfont icon-zidingyibiaozhu"></span>`
+
+            let str = 'container'
+            let obj = this.obj
+            let cityName = this.real_city
+            var left = this.mark.position[0]
+            var right = this.mark.position[1]
+            console.log(left)
+
+            // 地图
+            var map = new AMap.Map(str, obj)
+            // 点标记
+            var marker = new AMap.Marker(this.mark) 
+            // this.changeCondition()
+            //查询
+            AMap.service(['AMap.PlaceSearch'], function() {
+                //构造地点查询类
+                var placeSearch = new AMap.PlaceSearch({
+                    type: typeName, // 兴趣点类别
+                    pageSize: 6, // 单页显示结果条数
+                    pageIndex: 1, // 页码
+                    citylimit: true, //是否强制限制在设置的城市内搜索
+                    map: map, // 展现结果的地图实例
+                    panel: 'panel', // 结果列表将在此容器中进行展示。
+                    autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+                })
+
+                var cpoint = [left, right] //中心点坐标
+                placeSearch.searchNearBy(
+                    cityName,
+                    cpoint,
+                    3000,
+                    (status, result) => {
+                        console.log(result)
+                    }
+                )
+            })
+
+            this.map = map
+            this.map.add(marker)
+        },
         //请求酒店
         async getHotelInfo() {
             const res = await this.$axios.get('/hotels', {
@@ -213,13 +266,16 @@ export default {
             this.priceInfo = res.data.data[0].products
             this.value = this.hotelDetail.stars
             this.localtion = this.hotelDetail.location
-
-            // console.log(this.hotelDetail)
+            this.real_city = this.hotelDetail.real_city
         },
         // 浏览大图
         changeImage(item) {
-            // console.log(item)
             this.mainImage = item.url
+        },
+        //点击搜索项目
+        handleClick(tab, event) {
+            console.log(tab)
+            this.changeCondition(tab.label)
         }
     }
 }
@@ -358,15 +414,29 @@ h3 {
     margin: 40px 0;
     display: flex;
     .mapview {
-        width: 70%;
+        width: 60%;
     }
     .mapinfo {
-        width: 30%;
-        background-color: gray;
+        overflow: auto;
+        width: 40%;
+        #panel {
+            width: 100%;
+            height: 100%;
+        }
     }
 }
 #container {
     width: 100%;
     height: 100%;
+}
+/deep/ .iconfont {
+    color: blue;
+    font-size: 30px;
+}
+/deep/ .el-tabs__header {
+    margin: 0;
+}
+/deep/ .amap_lib_placeSearch .poibox {
+    min-height: 55px;
 }
 </style>
