@@ -126,7 +126,6 @@
           :show-tooltip="false"
           @change="changePrice(showPrice)"
           :step="10"
-          :min="1"
         ></el-slider>
       </div>
       <div class="level">
@@ -405,10 +404,6 @@ export default {
             this.earth = this.backHotelInfo.map(v => {
                 return v.location
             })
-            // console.log(this.earth[0]);
-            // this.center = this.earth[0]
-            // console.log(this.center)
-
             this.map.remove(this.marklist)
             setTimeout(() => {
                 this.markList(this.backHotelInfo)
@@ -421,6 +416,8 @@ export default {
             }).then(res => {
                 const { data } = res.data
                 this.hotelCategory = data
+
+                console.log(this.hotelCategory)
             })
         },
         //相当于change事件，一旦输入框的值变化就变化
@@ -458,8 +455,8 @@ export default {
                 }
             })
             this.cityinfolist = res.data.data
-            // console.log(this.cityinfolist);
-            this.cityinfolist.id = this.city
+            this.city = `&city=${this.cityinfolist[0].id}`
+            // console.log(this.city);
             this.getHotel(this.cityinfolist[0].id)
             this.ishowArea = false
         },
@@ -482,9 +479,12 @@ export default {
         },
         // 点击切换页数
         handleCurrentChange(value) {
-            // console.log(value)
-            // this.map.add([])
-            this.getHotel(this.cityinfolist[0].id, (value - 1) * 5, null)
+            if(!this.totalUrl){
+                this.getHotel(this.cityinfolist[0].id, (value - 1) * 5, null)
+            }else{
+                this.totalUrl+=`&_start=5`
+                this.hobbyHotel(this.totalUrl)
+            }
         },
         //点击查询价格
         checkPrice() {
@@ -513,106 +513,120 @@ export default {
                 }
             })
         },
-        // 封装筛选条件
-        hobbyHotel(
-            city = null,
-            price = null,
-            level = null,
-            type = null,
-            brand = null
-        ) {
+        // 封装筛选条件后请求酒店
+        hobbyHotel(totelUrl) {
             this.$axios({
-                url: '/hotels',
-                params: {
-                    city: city,
-                    price_lt: price, //拖动价格
-                    hotellevel: level, //酒店星级
-                    hoteltype: type, //酒店设备类型
-                    hotelbrand: brand //酒店品牌
-                }
+                url: `/hotels?${totelUrl}`//&_start=5
             }).then(res => {
-                // console.log(res);
-                if (res.data.data.length == 0) {
-                    this.isShowNoData = true
-                }
                 this.backHotelInfo = res.data.data
+                console.log(this.backHotelInfo)
+                this.total = res.data.total
+                if(res.data.total==0){
+                    this.isShowNoData=true;
+                }
+                this.earth = this.backHotelInfo.map(v => {
+                    return v.location
+                })
+                this.map.remove(this.marklist)
+                setTimeout(() => {
+                    this.markList(this.backHotelInfo)
+                }, 10)
             })
         },
 
         // 拖动价格
         changePrice(showPrice) {
-            this.price_lt = showPrice
-            console.log(
-                
-                    this.price_lt +
-                    this.hotellevel_in +
-                    this.hoteltype_in +
-                    this.hotelasset_in +
-                    this.hotelbrand_in
-            )
+            this.price_lt = `&price_lt=${this.showPrice}`
+            this.totalUrl =
+                this.city +
+                this.price_lt +
+                this.hotellevel_in +
+                this.hoteltype_in +
+                this.hotelasset_in +
+                this.hotelbrand_in
+            this.hobbyHotel(this.totalUrl)
 
-            // this.$axios({
-            //     url: '/hotels',
-            //     params: {
-            //         price_lt: showPrice,
-            //         city: this.cityinfolist[0].id
-            //     }
-            // }).then(res => {
-            //     this.backHotelInfo = res.data.data
-            //     this.total = res.data.total
-            //     this.price_lt=showPrice;
-            // })
         },
         //选择酒店等级
         chooseLevel(level) {
+            this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
-            this.hotellevel_in = decodeURIComponent(
+            this.hotellevel_in = `&${decodeURIComponent(
                 Qs.stringify(
                     { hotellevel_in: this.hotelstar },
                     { arrayFormat: 'repeat' }
                 )
-            )
-            this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
-            console.log(this.totalUrl);
-            
-            // this.hobbyHotel(this.cityinfolist[0].id, this.showPrice, level)
+            )}`
+            this.totalUrl =
+                this.city +
+                this.price_lt +
+                this.hotellevel_in +
+                this.hoteltype_in +
+                this.hotelasset_in +
+                this.hotelbrand_in
+            console.log(this.totalUrl)
+            this.hobbyHotel(this.totalUrl)
         },
         //选择住宿类型
         chooseType() {
+            this.price_lt = `&price_lt=${this.showPrice}`
+
             const Qs = require('qs')
-            this.hoteltype_in = decodeURIComponent(
+            this.hoteltype_in = `&${decodeURIComponent(
                 Qs.stringify(
                     { hoteltype_in: this.hoteltype },
                     { arrayFormat: 'repeat' }
                 )
-            )
-            this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
-            console.log(this.totalUrl);
+            )}`
+            this.totalUrl =
+                this.city +
+                this.price_lt +
+                this.hotellevel_in +
+                this.hoteltype_in +
+                this.hotelasset_in +
+                this.hotelbrand_in
+            //    console.log(this.totalUrl);
+            this.hobbyHotel(this.totalUrl)
         },
         //选择设备
         chooseEquipment() {
+            this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
-            this.hotelasset_in = decodeURIComponent(
+            this.hotelasset_in = `&${decodeURIComponent(
                 Qs.stringify(
-                    { hoteltype_in: this.hoteltype },
+                    { hotelasset_in: this.hotelequipment },
                     { arrayFormat: 'repeat' }
                 )
-            )
-          this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
-            console.log(this.totalUrl);
+            )}`
+            this.totalUrl =
+                this.city +
+                this.price_lt +
+                this.hotellevel_in +
+                this.hoteltype_in +
+                this.hotelasset_in +
+                this.hotelbrand_in
+            this.hobbyHotel(this.totalUrl)
         },
         //选择品牌
         chooseBrand() {
+            this.price_lt = `&price_lt=${this.showPrice}`
+
             const Qs = require('qs')
-            this.hotelbrand_in = decodeURIComponent(
+            this.hotelbrand_in = `&${decodeURIComponent(
                 Qs.stringify(
-                    { hoteltype_in: this.hoteltype },
+                    { hotelbrand_in: this.hotelbrand },
                     { arrayFormat: 'repeat' }
                 )
-            )
-           this.totalUrl=`${this.price_lt}&${this.hotellevel_in}&${this.hoteltype_in}&${this.hotelasset_in}&${this.hotelbrand_in}`
-            console.log(this.totalUrl);
-        }
+            )}`
+            this.totalUrl =
+                this.city +
+                this.price_lt +
+                this.hotellevel_in +
+                this.hoteltype_in +
+                this.hotelasset_in +
+                this.hotelbrand_in
+            this.hobbyHotel(this.totalUrl)
+        },
     }
 }
 </script>
