@@ -2,7 +2,8 @@ import { Message } from 'element-ui'
 // 草稿箱数据
 export const state = () => {
   return {
-    darftList: [] //草稿数据
+    darftList: [], //草稿数据
+    searchWord: ''
   }
 }
 
@@ -21,5 +22,14 @@ export const mutations = {
       state.darftList.splice(1, idnex)
     }
     Message.success('删除成功')
+  },
+
+  //   首页搜搜关键字
+  searchPost(state, data) {
+    state.searchWord = data
+  },
+  //   删除搜索的历史记录
+  deletePost(state, data) {
+    state.searchWord = data
   }
 }

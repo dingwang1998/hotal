@@ -3,15 +3,15 @@
     <!-- 面包屑 -->
     <div class="bread">
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>{{hotelDetail.big_cate}}</el-breadcrumb-item>
+        <el-breadcrumb-item @click="$router.push('/hotel/index')">{{hotelDetail.big_cate}}</el-breadcrumb-item>
         <el-breadcrumb-item>{{hotelDetail.real_city}}酒店</el-breadcrumb-item>
-        <!-- <el-breadcrumb-item>{{hotelDetail.name}}</el-breadcrumb-item> -->
+        <el-breadcrumb-item>{{hotelDetail.name}}</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
     <!-- 酒店名称 -->
     <div class="hotelInfo">
-      <!-- <h2>{{hotelDetail.name}}</h2> -->
+      <h2>{{hotelDetail.name}}</h2>
       <p>{{hotelDetail.alias}}</p>
       <p>
         <span class="el-icon-location"></span>
@@ -31,7 +31,7 @@
 
     <!-- 表格 -->
     <el-table :data="priceInfo" style="width: 100%">
-      <!-- <el-table-column prop="name" label="价格来源" width="380"></el-table-column> -->
+      <el-table-column prop="name" label="价格来源" width="380"></el-table-column>
       <el-table-column prop="bestType" label="低价房型" width="380"></el-table-column>
       <el-table-column prop="price" label="最低价格/每晚" width="380">
         <span class="hightLight">￥{{priceInfo[0].price}}</span>
@@ -53,10 +53,10 @@
       <div class="mapinfo">
         <div class="card">
           <el-tabs v-model="activeName" type="card" @tab-click="handleClick" tab-position="top">
-            <el-tab-pane label="酒店" name="1"></el-tab-pane>
-            <el-tab-pane label="餐饮" name="2"></el-tab-pane>
-            <el-tab-pane label="交通" name="3"></el-tab-pane>
-            <el-tab-pane label="娱乐" name="4"></el-tab-pane>
+            <el-tab-pane label="酒店"></el-tab-pane>
+            <el-tab-pane label="餐饮"></el-tab-pane>
+            <el-tab-pane label="交通"></el-tab-pane>
+            <el-tab-pane label="娱乐"></el-tab-pane>
           </el-tabs>
         </div>
         <div id="panel"></div>
@@ -101,7 +101,7 @@
           <span>品牌信息</span>
         </div>
         <div class="detail">
-          <!-- <el-tag>{{hotelDetail.hotelbrand.name}}</el-tag> -->
+          <el-tag v-if="hotelDetail.hotelbrand">{{hotelDetail.hotelbrand.name}}</el-tag>
         </div>
       </div>
     </div>
@@ -200,7 +200,6 @@ export default {
     },
     mounted() {
         this.getHotelInfo()
-
         setTimeout(() => {
             let typeName = '酒店'
             this.changeCondition(typeName)
@@ -223,12 +222,12 @@ export default {
             let cityName = this.real_city
             var left = this.mark.position[0]
             var right = this.mark.position[1]
-            console.log(left)
+            // console.log(left)
 
             // 地图
             var map = new AMap.Map(str, obj)
             // 点标记
-            var marker = new AMap.Marker(this.mark) 
+            var marker = new AMap.Marker(this.mark)
             // this.changeCondition()
             //查询
             AMap.service(['AMap.PlaceSearch'], function() {
@@ -249,7 +248,7 @@ export default {
                     cpoint,
                     3000,
                     (status, result) => {
-                        console.log(result)
+                        // console.log(result)
                     }
                 )
             })
@@ -267,6 +266,7 @@ export default {
             this.value = this.hotelDetail.stars
             this.localtion = this.hotelDetail.location
             this.real_city = this.hotelDetail.real_city
+            console.log(this.hotelDetail)
         },
         // 浏览大图
         changeImage(item) {

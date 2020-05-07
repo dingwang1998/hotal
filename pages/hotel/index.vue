@@ -344,6 +344,9 @@ export default {
     },
     mounted() {
         setTimeout(() => {
+            console.log(this.$store.state.post.searchWord);
+            
+
             var map = new AMap.Map('container')
             // Amap在模板中导入js文件之后就应经是一个全局变量了
             // map是一个地图的对象
@@ -355,20 +358,20 @@ export default {
             this.map = map
             this.markList()
             // 弹框提示当前位置
-            AMap.plugin('AMap.CitySearch', () => {
-                var citySearch = new AMap.CitySearch()
-                citySearch.getLocalCity((status, result) => {
-                    if (status === 'complete' && result.info === 'OK') {
-                        // 查询成功，result即为当前所在城市信息
-                        // console.log(result)
-                        // this.form.mainCity=result.city
-                        this.$alert(`${result.city}`, '当前定位', {
-                            confirmButtonText: '确定',
-                            callback: action => {}
-                        })
-                    }
-                })
-            })
+            // AMap.plugin('AMap.CitySearch', () => {
+            //     var citySearch = new AMap.CitySearch()
+            //     citySearch.getLocalCity((status, result) => {
+            //         if (status === 'complete' && result.info === 'OK') {
+            //             // 查询成功，result即为当前所在城市信息
+            //             // console.log(result)
+            //             // this.form.mainCity=result.city
+            //             this.$alert(`${result.city}`, '当前定位', {
+            //                 confirmButtonText: '确定',
+            //                 callback: action => {}
+            //             })
+            //         }
+            //     })
+            // })
             this.getHotelBrand()
         }, 200)
     },
@@ -400,9 +403,9 @@ export default {
             this.backHotelInfo = res.data.data
             console.log(this.backHotelInfo)
             this.total = res.data.total
-            if(res.data.total==0){
-                this.isShowNoData=true
-            };
+            if (res.data.total == 0) {
+                this.isShowNoData = true
+            }
             this.earth = this.backHotelInfo.map(v => {
                 return v.location
             })
@@ -481,10 +484,10 @@ export default {
         },
         // 点击切换页数
         handleCurrentChange(value) {
-            if(!this.totalUrl){
+            if (!this.totalUrl) {
                 this.getHotel(this.cityinfolist[0].id, (value - 1) * 5, null)
-            }else{
-                this.totalUrl+=`&_start=5`
+            } else {
+                this.totalUrl += `&_start=5`
                 this.hobbyHotel(this.totalUrl)
             }
         },
@@ -518,13 +521,13 @@ export default {
         // 封装筛选条件后请求酒店
         hobbyHotel(totelUrl) {
             this.$axios({
-                url: `/hotels?${totelUrl}`//&_start=5
+                url: `/hotels?${totelUrl}` //&_start=5
             }).then(res => {
                 this.backHotelInfo = res.data.data
                 console.log(this.backHotelInfo)
                 this.total = res.data.total
-                if(res.data.total==0){
-                    this.isShowNoData=true;
+                if (res.data.total == 0) {
+                    this.isShowNoData = true
                 }
                 this.earth = this.backHotelInfo.map(v => {
                     return v.location
@@ -547,11 +550,10 @@ export default {
                 this.hotelasset_in +
                 this.hotelbrand_in
             this.hobbyHotel(this.totalUrl)
-
         },
         //选择酒店等级
         chooseLevel(level) {
-            if(!this.city)return this.$message.error('请输入城市');
+            if (!this.city) return this.$message.error('请输入城市')
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hotellevel_in = `&${decodeURIComponent(
@@ -572,7 +574,7 @@ export default {
         },
         //选择住宿类型
         chooseType() {
-            if(!this.city)return this.$message.error('请输入城市');
+            if (!this.city) return this.$message.error('请输入城市')
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hoteltype_in = `&${decodeURIComponent(
@@ -593,7 +595,7 @@ export default {
         },
         //选择设备
         chooseEquipment() {
-            if(!this.city)return this.$message.error('请输入城市');
+            if (!this.city) return this.$message.error('请输入城市')
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hotelasset_in = `&${decodeURIComponent(
@@ -613,7 +615,7 @@ export default {
         },
         //选择品牌
         chooseBrand() {
-            if(!this.city)return this.$message.error('请输入城市');
+            if (!this.city) return this.$message.error('请输入城市')
             this.price_lt = `&price_lt=${this.showPrice}`
             const Qs = require('qs')
             this.hotelbrand_in = `&${decodeURIComponent(
@@ -630,7 +632,7 @@ export default {
                 this.hotelasset_in +
                 this.hotelbrand_in
             this.hobbyHotel(this.totalUrl)
-        },
+        }
     }
 }
 </script>

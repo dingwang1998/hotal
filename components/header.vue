@@ -47,108 +47,114 @@
 </template>
 <script>
 export default {
-  methods: {
-    // 用户退出
-    handleLogout() {
-     this.$store.commit('user/saveData',{});
-     this.$message.success('退出成功')
+    data() {
+        return {
+            value: 1
+        }
+    },
+    mounted() {},
+    methods: {
+        // 用户退出
+        handleLogout() {
+            this.$store.commit('user/saveData', {})
+            this.$message.success('退出成功')
+        }
     }
-  }
 }
 </script>
 <style scoped lang="less">
 .header {
-  height: 65px;
-  line-height: 65px;
-  background: #fff;
-  border-bottom: 1px #ddd solid;
-  box-shadow: 0 3px 0 #f5f5f5;
-  box-sizing: border-box;
-  // background-color: #cecece;
+    height: 65px;
+    line-height: 65px;
+    background: #fff;
+    border-bottom: 1px #ddd solid;
+    box-shadow: 0 3px 0 #f5f5f5;
+    box-sizing: border-box;
+    // background-color: #cecece;
 
-  .main {
-    width: 1000px;
-    margin: 0 auto;
-  }
-
-  .logo {
-    width: 156px;
-    padding-top: 8px;
-    margin-right: 20px;
-
-    img {
-      display: block;
-      width: 100%;
-      transform: scale(1.2);
-      margin-left: 15px;
-    }
-  }
-
-  .navs {
-    margin: 0 20px;
-    flex: 1;
-
-    a {
-      display: block;
-      padding: 0 20px;
-      height: 65px;
-      box-sizing: border-box;
-
-      &:hover,
-      &:focus,
-      &:active {
-        border-bottom: 5px #409eff solid;
-        color: #5573b7;
-      }
+    .main {
+        width: 1000px;
+        margin: 0 auto;
     }
 
-    /deep/ .nuxt-link-exact-active {
-      background: #409eff;
-      color: #fff !important;
-    }
-  }
+    .logo {
+        width: 156px;
+        padding-top: 8px;
+        margin-right: 20px;
 
-  .message {
-    height: 36px;
-    line-height: 1;
-    cursor: pointer;
-    .el-icon-bell {
-      margin-right: 2px;
-      font-size: 18px;
-    }
-  }
-
-  .el-dropdown-link {
-    margin-left: 20px;
-
-    &:hover {
-      img {
-        border-color: #409eff;
-      }
+        img {
+            display: block;
+            width: 100%;
+            transform: scale(1.2);
+            margin-left: 15px;
+        }
     }
 
-    a {
-      display: block;
+    .navs {
+        margin: 0 20px;
+        flex: 1;
+
+        a {
+            display: block;
+            padding: 0 20px;
+            height: 65px;
+            box-sizing: border-box;
+
+            &:hover,
+            &:focus,
+            &:active {
+                border-bottom: 5px #409eff solid;
+                color: #5573b7;
+            }
+        }
+
+        /deep/ .nuxt-link-exact-active {
+            background: #409eff;
+            color: #fff !important;
+        }
     }
 
-    img {
-      width: 32px;
-      height: 32px;
-      vertical-align: middle;
-      border: 2px #fff solid;
-      border-radius: 50px;
+    .message {
+        height: 36px;
+        line-height: 1;
+        cursor: pointer;
+        .el-icon-bell {
+            margin-right: 2px;
+            font-size: 18px;
+        }
     }
-  }
 
-  .account-link {
-    font-size: 14px;
-    margin-left: 10px;
-    color: #666;
+    .el-dropdown-link {
+        margin-left: 20px;
 
-    &:hover {
-      color: #409eff;
-      text-decoration: underline;
+        &:hover {
+            img {
+                border-color: #409eff;
+            }
+        }
+
+        a {
+            display: block;
+        }
+
+        img {
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+            border: 2px #fff solid;
+            border-radius: 50px;
+        }
     }
-  }
+
+    .account-link {
+        font-size: 14px;
+        margin-left: 10px;
+        color: #666;
+
+        &:hover {
+            color: #409eff;
+            text-decoration: underline;
+        }
+    }
 }
 </style>
