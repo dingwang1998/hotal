@@ -103,7 +103,7 @@
             </div>
             <div class="posttwo" v-if="item.images.length<3" @click="toPostDetail(item)">
               <div class="left-img">
-                <img :src="item.images" />
+                <img :src="item.images" v-if="item.images" />
               </div>
               <div class="right-post">
                 <h3>{{item.title}}</h3>
@@ -143,303 +143,297 @@
 
 <script>
 export default {
-    data() {
-        return {
-            form: {
-                _start: 0, //当前页数
-                _limit: 3 //每页显示多少
-            },
-            //推荐搜索关键字
-            commondCitySearch: [
-                { name: '广州' },
-                { name: '上海' },
-                { name: '北京' }
-            ],
-            // 左侧推荐城市数组
-            hotCity: [],
-            //右侧的文章列表数据
-            totalList: [],
-            //总文章条数
-            total: 0,
-            // 搜索城市的输入框值
-            searchCity: ''
-        }
-    },
-    async mounted() {
-        setTimeout(() => {
-            console.log(this.$store.state.post.searchWord)
-            if (this.$store.state.post.searchWord) {
-                this.getPost(
-                    this.form._start,
-                    this.form._limit,
-                    this.$store.state.post.searchWord
-                )
-                this.searchCity = this.$store.state.post.searchWord
-                this.$store.commit('post/deletePost', '')
-            } else {
-                this.getPost(this.form._start, this.form._limit, null)
-            }
-        }, 10)
-
-        //获取左侧推荐
-        const res = await this.$axios.get('/posts/cities')
-        const { data } = res.data
-        this.hotCity = data
-    },
-    methods: {
-        //获取文章列表
-        async getPost(one, two, three = null) {
-            // 获取文章列表
-            const postdata = await this.$axios.get('/posts', {
-                params: { _start: one, _limit: two, city: three }
-            })
-            this.totalList = postdata.data.data
-            this.total = postdata.data.total
-        },
-        handleOpen() {},
-        handleClose() {},
-        //切换每页显示多少条
-        handleSizeChange(page) {
-            this.form._start = 0
-            this.form._limit = page
-            this.getPost(this.form._start, this.form._limit, this.searchCity)
-        },
-        //切换页数
-        handleCurrentChange(value) {
-            this.form._start = value
-            if (value == 1) {
-                this.form._start = value - 1
-            }
-            this.getPost(this.form._start, this.form._limit, null)
-        },
-        //点击文章，跳转到文章详情
-        toPostDetail(item) {
-            this.$router.push({
-                path: `/post/detail`,
-                query: {
-                    id: item.id
-                }
-            })
-        },
-        // 搜索城市
-        searchCityForm() {
-            if (this.searchCity) {
-                this.getPost(
-                    this.form._start,
-                    this.form._limit,
-                    this.searchCity
-                )
-            } else {
-                this.getPost(this.form._start, this.form._limit, null)
-            }
-        },
-        //点击删除搜索文字
-        clearSearchPost() {
-            this.form._start = 0
-            this.form._limit = 3
-            this.getPost(this.form._start, this.form._limit)
-        },
-        //点击搜索城市添加到输入框
-        chooseCity(name) {
-            this.searchCity = name
-            this.getPost(this.form._start, this.form._limit, this.searchCity)
-        },
-        //点击左侧推荐城市弹出文章
-        leftCommondCity(item2) {
-            this.searchCity = item2.city
-            this.getPost(this.form._start, this.form._limit, this.searchCity)
-        }
+  data() {
+    return {
+      form: {
+        _start: 0, //当前页数
+        _limit: 3 //每页显示多少
+      },
+      //推荐搜索关键字
+      commondCitySearch: [{ name: '广州' }, { name: '上海' }, { name: '北京' }],
+      // 左侧推荐城市数组
+      hotCity: [],
+      //右侧的文章列表数据
+      totalList: [],
+      //总文章条数
+      total: 0,
+      // 搜索城市的输入框值
+      searchCity: ''
     }
+  },
+  async mounted() {
+    setTimeout(() => {
+      console.log(this.$store.state.post.searchWord)
+      if (this.$store.state.post.searchWord) {
+        this.getPost(
+          this.form._start,
+          this.form._limit,
+          this.$store.state.post.searchWord
+        )
+        this.searchCity = this.$store.state.post.searchWord
+        this.$store.commit('post/deletePost', '')
+      } else {
+        this.getPost(this.form._start, this.form._limit, null)
+      }
+    }, 10)
+
+    //获取左侧推荐
+    const res = await this.$axios.get('/posts/cities')
+    const { data } = res.data
+    this.hotCity = data
+  },
+  methods: {
+    //获取文章列表
+    async getPost(one, two, three = null) {
+      // 获取文章列表
+      const postdata = await this.$axios.get('/posts', {
+        params: { _start: one, _limit: two, city: three }
+      })
+      this.totalList = postdata.data.data
+      console.log(this.totalList)
+
+      this.total = postdata.data.total
+    },
+    handleOpen() {},
+    handleClose() {},
+    //切换每页显示多少条
+    handleSizeChange(page) {
+      this.form._start = 0
+      this.form._limit = page
+      this.getPost(this.form._start, this.form._limit, this.searchCity)
+    },
+    //切换页数
+    handleCurrentChange(value) {
+      this.form._start = value
+      if (value == 1) {
+        this.form._start = value - 1
+      }
+      this.getPost(this.form._start, this.form._limit, null)
+    },
+    //点击文章，跳转到文章详情
+    toPostDetail(item) {
+      this.$router.push({
+        path: `/post/detail`,
+        query: {
+          id: item.id
+        }
+      })
+    },
+    // 搜索城市
+    searchCityForm() {
+      if (this.searchCity) {
+        this.getPost(this.form._start, this.form._limit, this.searchCity)
+      } else {
+        this.getPost(this.form._start, this.form._limit, null)
+      }
+    },
+    //点击删除搜索文字
+    clearSearchPost() {
+      this.form._start = 0
+      this.form._limit = 3
+      this.getPost(this.form._start, this.form._limit)
+    },
+    //点击搜索城市添加到输入框
+    chooseCity(name) {
+      this.searchCity = name
+      this.getPost(this.form._start, this.form._limit, this.searchCity)
+    },
+    //点击左侧推荐城市弹出文章
+    leftCommondCity(item2) {
+      this.searchCity = item2.city
+      this.getPost(this.form._start, this.form._limit, this.searchCity)
+    }
+  }
 }
 </script>
 
 <style scoped lang='less'>
 .main-container {
-    width: 1000px;
-    margin: 0 auto;
-    padding: 20px 0;
+  width: 1000px;
+  margin: 0 auto;
+  padding: 20px 0;
 }
 .menus-wrapper {
+  box-sizing: border-box;
+  /deep/ .el-menu-item {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  /deep/ .el-menu-item-group__title {
+    padding: 0;
+  }
+  h3 {
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
+  }
+  .recommen-img {
+    width: 100%;
+    padding: 5px;
     box-sizing: border-box;
-    /deep/ .el-menu-item {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
+    cursor: pointer;
+    img {
+      width: 100%;
     }
-    /deep/ .el-menu-item-group__title {
-        padding: 0;
-    }
-    h3 {
-        padding: 10px 20px;
-        margin-top: 15px;
-        font-size: 16px;
-        border-bottom: 1px solid #ccc;
-    }
-    .recommen-img {
-        width: 100%;
-        padding: 5px;
-        box-sizing: border-box;
-        cursor: pointer;
-        img {
-            width: 100%;
-        }
-    }
-    .city-info {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+  }
+  .city-info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 /deep/ .el-col > .el-input > .el-input__inner {
-    outline: none;
-    outline-style: none; /*去掉轮廓线*/
-    border: none;
-    border: 2px solid #409eff;
-    border-radius: 4px;
+  outline: none;
+  outline-style: none; /*去掉轮廓线*/
+  border: none;
+  border: 2px solid #409eff;
+  border-radius: 4px;
 }
 /deep/ .el-submenu__title {
-    padding: 0 !important;
+  padding: 0 !important;
 }
 .cities {
-    font-size: 20px;
-    color: #ff6700;
-    margin-right: 10px;
+  font-size: 20px;
+  color: #ff6700;
+  margin-right: 10px;
 }
 .post-wrapper {
-    padding: 0 20px;
-    .hot-city {
-        font-size: 14px;
-        margin-top: 10px;
-        color: gray;
-        a {
-            margin-left: 15px;
-            color: gray;
-        }
+  padding: 0 20px;
+  .hot-city {
+    font-size: 14px;
+    margin-top: 10px;
+    color: gray;
+    a {
+      margin-left: 15px;
+      color: gray;
     }
-    .recommend-plan {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #ff9d00;
-        .el-button--primary {
-            background-color: #ff9d00 !important;
-            border-color: #ff9d00;
-        }
-        h3 {
-            padding: 15px 0;
-            border-bottom: 2px solid #ff9d00;
-            color: #ff9d00;
-        }
-        .el-button--medium {
-            padding: 12px 10px;
-        }
+  }
+  .recommend-plan {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ff9d00;
+    .el-button--primary {
+      background-color: #ff9d00 !important;
+      border-color: #ff9d00;
     }
+    h3 {
+      padding: 15px 0;
+      border-bottom: 2px solid #ff9d00;
+      color: #ff9d00;
+    }
+    .el-button--medium {
+      padding: 12px 10px;
+    }
+  }
 }
 .post-list {
-    .postone {
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-        cursor: pointer;
-        h3 {
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        h3:hover {
-            color: #ff6700;
-        }
-        p {
-            font-size: 16px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        .post-img {
-            width: 100%;
-            height: 160px;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: nowrap;
-            overflow: hidden;
-            img {
-                width: 33%;
-                margin-right: 10px;
-                height: 100%;
-            }
-        }
+  .postone {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    h3 {
+      margin-bottom: 10px;
+      cursor: pointer;
     }
+    h3:hover {
+      color: #ff6700;
+    }
+    p {
+      font-size: 16px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .post-img {
+      width: 100%;
+      height: 160px;
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: nowrap;
+      overflow: hidden;
+      img {
+        width: 33%;
+        margin-right: 10px;
+        height: 100%;
+      }
+    }
+  }
 }
 .post-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  img {
+    width: 20px;
+    border-radius: 50%;
+  }
+  .info-left {
+    width: 220px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    img {
-        width: 20px;
-        border-radius: 50%;
-    }
-    .info-left {
-        width: 220px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .info-right {
-        font-size: 16px;
-    }
+  }
+  .info-right {
+    font-size: 16px;
+  }
 }
 .stylecolor {
-    color: #ff6700 !important;
+  color: #ff6700 !important;
 }
 .posttwo {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    height: 172.17px;
-    border-bottom: 1px solid #eee;
-    h3:hover {
-        color: #ff6700;
-        cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  height: 172.17px;
+  border-bottom: 1px solid #eee;
+  h3:hover {
+    color: #ff6700;
+    cursor: pointer;
+  }
+  .left-img {
+    width: 32%;
+    img {
+      width: 227.19px;
+      height: 148.27px;
     }
-    .left-img {
-        width: 32%;
-        img {
-            width: 227.19px;
-            height: 148.27px;
-        }
-    }
+  }
 }
 .sec-info {
+  display: flex;
+  justify-content: space-between;
+  img {
+    width: 20px;
+    border-radius: 50%;
+  }
+  .sec-info-action {
+    font-size: 12px;
     display: flex;
-    justify-content: space-between;
-    img {
-        width: 20px;
-        border-radius: 50%;
-    }
-    .sec-info-action {
-        font-size: 12px;
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        width: 220px;
-    }
+    justify-content: space-evenly;
+    align-items: center;
+    width: 220px;
+  }
 }
 .right-post {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-left: 15px;
-    height: 100%;
-    p {
-        font-size: 16px;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-    }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-left: 15px;
+  height: 100%;
+  p {
+    font-size: 16px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
 }
 /deep/ .el-pagination {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 </style>

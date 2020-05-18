@@ -344,8 +344,7 @@ export default {
     },
     mounted() {
         setTimeout(() => {
-            console.log(this.$store.state.post.searchWord);
-            
+            console.log(this.$store.state.post.searchWord)
 
             var map = new AMap.Map('container')
             // Amap在模板中导入js文件之后就应经是一个全局变量了
@@ -358,20 +357,20 @@ export default {
             this.map = map
             this.markList()
             // 弹框提示当前位置
-            // AMap.plugin('AMap.CitySearch', () => {
-            //     var citySearch = new AMap.CitySearch()
-            //     citySearch.getLocalCity((status, result) => {
-            //         if (status === 'complete' && result.info === 'OK') {
-            //             // 查询成功，result即为当前所在城市信息
-            //             // console.log(result)
-            //             // this.form.mainCity=result.city
-            //             this.$alert(`${result.city}`, '当前定位', {
-            //                 confirmButtonText: '确定',
-            //                 callback: action => {}
-            //             })
-            //         }
-            //     })
-            // })
+            AMap.plugin('AMap.CitySearch', () => {
+                var citySearch = new AMap.CitySearch()
+                citySearch.getLocalCity((status, result) => {
+                    if (status === 'complete' && result.info === 'OK') {
+                        // 查询成功，result即为当前所在城市信息
+                        // console.log(result)
+                        // this.form.mainCity=result.city
+                        this.$alert(`${result.city}`, '当前定位', {
+                            confirmButtonText: '确定',
+                            callback: action => {}
+                        })
+                    }
+                })
+            })
             this.getHotelBrand()
         }, 200)
     },

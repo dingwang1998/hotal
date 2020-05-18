@@ -3,7 +3,7 @@
     <div class="footer">
       <el-row class="info-list">
         <el-col :span="6" :offset="1" class="active">
-          <h5>梦游旅行网</h5>
+          <h5>任逍遥旅游网</h5>
           <p>上亿旅行者共同打造的"旅行神器"</p>
           <p>
             <span>60,000</span> 多个全球旅游目的地
@@ -24,8 +24,8 @@
           <p>服务协议 游记协议</p>
           <p>商城平台服务协议</p>
           <p>网络信息侵权通知指引</p>
-          <p>闲云旅游旅游网服务监督员</p>
-          <p>网站地图加入闲云旅游</p>
+          <p>任逍遥旅游网服务监督员</p>
+          <p>网站地图加入任逍遥旅游</p>
         </el-col>
         <el-col :span="5" class="active">
           <h5>旅行服务</h5>
@@ -41,13 +41,10 @@
           </p>关注我们
         </el-col>
       </el-row>
-      <div class="dream">
-          梦游旅行 行旅游梦 带着梦出发吧~
-      </div>
-
+      <div class="dream">随风飘飘天地任逍遥吧~</div>
       <div
         class="licence"
-      >粤ICP备08001421号 粤公网安备110108007702 Copyright © 2019-2020 -行旅游梦 All Rights Reserved</div>
+      >粤ICP备08001421号 粤公网安备110108007702 Copyright © 2019 -逍遥梦 All Rights Reserved</div>
     </div>
   </div>
 </template>
@@ -58,57 +55,57 @@ export default {}
 
 <style scoped lang="less">
 .footer-wrapper {
-  background: #333;
-  color: #ccc;
-  min-width: 1000px;
-  background-color: #3c3c3c;
+    background: #333;
+    color: #ccc;
+    min-width: 1000px;
+    background-color: #3c3c3c;
 }
 
 .footer {
-  padding-top: 30px;
-  margin: 0 auto;
-  width: 1000px;
+    padding-top: 30px;
+    margin: 0 auto;
+    width: 1000px;
 }
 
 .info-list {
-  h5 {
-    font-weight: normal;
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: 12px;
-    line-height: 1.8;
-    span {
-      color: orange;
+    h5 {
+        font-weight: normal;
+        font-size: 16px;
+        margin-bottom: 10px;
     }
-  }
+
+    p {
+        font-size: 12px;
+        line-height: 1.8;
+        span {
+            color: orange;
+        }
+    }
 }
 
 .scan {
-  text-align: center;
+    text-align: center;
 
-  img {
-    width: 140px;
-    height: 140px;
-  }
+    img {
+        width: 140px;
+        height: 140px;
+    }
 
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .licence {
-//   border-top: 1px #666 solid;
-//   margin-top: 20px;
-  padding: 50px 0;
-  text-align: center;
-  font-size: 12px;
+    //   border-top: 1px #666 solid;
+    //   margin-top: 20px;
+    padding: 50px 0;
+    text-align: center;
+    font-size: 12px;
 }
-.active p:hover{
+.active p:hover {
     color: #fff;
     cursor: pointer;
 }
-.dream{
+.dream {
     width: 100%;
     padding: 10px 0;
     border-top: 1px #666 solid;

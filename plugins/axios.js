@@ -19,15 +19,15 @@ export default function (nuxt) {
   }, error => {
     const { statusCode, message } = error.response.data;
     // console.log(statusCode);
-    
+
     if (statusCode == 400) {
       Message.error('用户不存在')
     }; //这里Message对应的是第4行的Message
-    if(statusCode == 401){
+    if (statusCode == 401) {
       Message.error('当前没有登录页');
       nuxt.redirect('/user/login')
     };
-    if(statusCode==403){
+    if (statusCode == 403) {
       Message.error('发表评论需要登陆账户');
       nuxt.redirect('/user/login');
     }

@@ -6,7 +6,7 @@
       <!-- logo -->
       <div class="logo">
         <nuxt-link to="/">
-          <img src="@/assets/logo4.png" alt />
+          <img src="@/assets/xiaoyao.png" alt />
         </nuxt-link>
       </div>
 
@@ -79,13 +79,13 @@ export default {
 
     .logo {
         width: 156px;
-        padding-top: 8px;
+        padding-top: 4px;
         margin-right: 20px;
 
         img {
             display: block;
             width: 100%;
-            transform: scale(1.2);
+            // transform: scale(1.2);
             margin-left: 15px;
         }
     }
